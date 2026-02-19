@@ -18,6 +18,8 @@ openproject::apt::sources:
     key:
       name: 'openproject.asc'
       source: 'https://dl.packager.io/srv/opf/openproject/key'
+      checksum: 'sha256'
+      checksum_value: '35ee80b7fca522dc8f418e81ff20ae189e957f0216f1e47c29cca2cd5f0069e0'
     location: "https://dl.packager.io/srv/deb/opf/openproject/stable/%{lookup('openproject::release_major')}/debian"
     release: "%{facts.os.distro.release.major}"
     repos: 'main'
