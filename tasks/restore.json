@@ -1,0 +1,28 @@
+{
+  "description": "Restore an OpenProject package-based installation from a timestamped backup set (database, attachments, configuration, and repositories).",
+  "parameters": {
+    "timestamp": {
+      "description": "Backup timestamp to restore (e.g. 20191119210038). Must match the suffix of the backup files in backup_dir.",
+      "type": "String[1]"
+    },
+    "backup_dir": {
+      "description": "Directory where OpenProject backup files are stored.",
+      "type": "Optional[String[1]]",
+      "default": "/var/db/openproject/backup"
+    },
+    "pg_no_owner": {
+      "description": "Pass --no-owner to pg_restore. Required when restoring to a database with a different owner than the original.",
+      "type": "Optional[Boolean]",
+      "default": false
+    }
+  },
+  "input_method": "stdin",
+  "implementations": [
+    {
+      "name": "restore.rb",
+      "requirements": [
+        "puppet-agent"
+      ]
+    }
+  ]
+}

@@ -17,6 +17,11 @@
 * `openproject::repository`: sets up repository
 * `openproject::system_requirements`: sets up system requirements
 
+### Tasks
+
+* [`backup`](#backup): Create a full backup of an OpenProject package-based installation (database, attachments, configuration, and repositories).
+* [`restore`](#restore): Restore an OpenProject package-based installation from a timestamped backup set (database, attachments, configuration, and repositories).
+
 ## Classes
 
 ### <a name="openproject"></a>`openproject`
@@ -109,4 +114,46 @@ of 'installer.dat' configuration file. This is advanced configuration, be
 sure to read on the openproject docmentation site for your version for more
 information: https://www.openproject.org/docs/installation-and-operations/configuration/environment/
 Default: undef
+
+## Tasks
+
+### <a name="backup"></a>`backup`
+
+Create a full backup of an OpenProject package-based installation (database, attachments, configuration, and repositories).
+
+**Supports noop?** false
+
+#### Parameters
+
+##### `backup_dir`
+
+Data type: `Optional[String[1]]`
+
+Directory where OpenProject stores backup files.
+
+### <a name="restore"></a>`restore`
+
+Restore an OpenProject package-based installation from a timestamped backup set (database, attachments, configuration, and repositories).
+
+**Supports noop?** false
+
+#### Parameters
+
+##### `timestamp`
+
+Data type: `String[1]`
+
+Backup timestamp to restore (e.g. 20191119210038). Must match the suffix of the backup files in backup_dir.
+
+##### `backup_dir`
+
+Data type: `Optional[String[1]]`
+
+Directory where OpenProject backup files are stored.
+
+##### `pg_no_owner`
+
+Data type: `Optional[Boolean]`
+
+Pass --no-owner to pg_restore. Required when restoring to a database with a different owner than the original.
 

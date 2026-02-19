@@ -1,0 +1,19 @@
+{
+  "description": "Create a full backup of an OpenProject package-based installation (database, attachments, configuration, and repositories).",
+  "parameters": {
+    "backup_dir": {
+      "description": "Directory where OpenProject stores backup files.",
+      "type": "Optional[String[1]]",
+      "default": "/var/db/openproject/backup"
+    }
+  },
+  "input_method": "stdin",
+  "implementations": [
+    {
+      "name": "backup.rb",
+      "requirements": [
+        "puppet-agent"
+      ]
+    }
+  ]
+}
