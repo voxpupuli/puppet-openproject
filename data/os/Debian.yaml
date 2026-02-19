@@ -1,0 +1,24 @@
+---
+openproject::system_requirements:
+  - 'apt-transport-https'
+  - 'ca-certificates'
+  - 'wget'
+  - 'gpg'
+openproject::full_text_extract_packages:
+  - 'catdoc'
+  - 'unrtf'
+  - 'poppler-utils'
+  - 'tesseract-ocr'
+openproject::apt::sources:
+  openproject:
+    comment: 'OpenProject APT repository - https://www.openproject.org/docs/installation-and-operations/installation/packaged/#debian-installation'
+    include:
+      deb: true
+      src: false
+    key:
+      name: 'openproject.asc'
+      source: 'https://dl.packager.io/srv/opf/openproject/key'
+    location: "https://dl.packager.io/srv/deb/opf/openproject/stable/%{lookup('openproject::release_major')}/debian"
+    notify_update: true
+    release: "%{facts.os.distro.release.major}"
+    repos: 'main'

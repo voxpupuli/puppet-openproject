@@ -5,4 +5,21 @@
 #
 # See https://github.com/puppetlabs/pdk-templates/blob/main/config_defaults.yml
 # for the default values.
---- {}
+Gemfile:
+  optional:
+    ':development':
+      - gem: 'mdl'
+      - gem: 'overcommit'
+spec/default_facts.yml:
+  is_pe: false
+  networking:
+    mac: 'AA:AA:AA:AA:AA:AA'
+    ip: '172.16.254.254'
+    ip6: "FE80:0000:0000:0000:AAAA:AAAA:AAAA"
+spec/spec_helper.rb:
+  coverage_report: true
+  minimum_code_coverage_percentage: 0
+  mock_with: ":rspec"
+  strict_level: ":warning"
+  strict_variables: true
+  hiera_config: 'hiera.yaml'

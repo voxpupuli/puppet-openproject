@@ -1,0 +1,7 @@
+<%- | Hash[String, Any] $installer_dat_contents | -%>
+<% include stdlib -%>
+<% $installer_dat_contents.keys.sort.each |$key| { -%>
+<% unless $installer_dat_contents[$key] =~ Undef { -%>
+<%= $key %> <%= $installer_dat_contents[$key] %>
+<% } -%>
+<% } -%>

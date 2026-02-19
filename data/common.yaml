@@ -1,1 +1,36 @@
---- {}
+---
+openproject::package_name: 'openproject'
+openproject::release_major: 14
+openproject::enable_full_text_extract: false
+openproject::system_user: 'openproject'
+openproject::system_group: 'openproject'
+openproject::configure::root_config_dir: '/etc/openproject'
+# installer.dat sane defaults
+openproject::configure::file_mode: '0600'
+openproject::configure::installer_dat_contents:
+  'memcached/autoinstall': 'install'
+  'openproject/admin_email': !!null
+  'openproject/edition': 'default'
+  'postgres/retry': 'retry'
+  'postgres/dbhost': 'localhost'
+  'postgres/autoinstall': 'reuse'
+  'postgres/dbport': 5432
+  'postgres/db_username': 'openproject'
+  # https://yaml.org/spec/1.2.2/#10211-null
+  # You might want to use eyaml for securing your password
+  # https://www.puppet.com/blog/puppet-eyaml-hiera-data
+  'postgres/db_password': !!null
+  'repositories/api-key': !!null
+  'repositories/git-install': 'skip'
+  'repositories/svn-install': 'skip'
+  'server/autoinstall': 'install'
+  'server/hostname': "%{facts.fqdn}"
+  'server/server_path_prefix': ''
+  'server/ssl': 'yes'
+  'server/ssl_cert': '/etc/openproject/ssl/cert.pem'
+  'server/ssl_key': '/etc/openproject/ssl/key.pem'
+  'server/ssl_ca': !!null
+  'server/variant': 'apache2'
+openproject::configure::logoutput: 'on_failure'
+openproject::configure::timeout: 600
+openproject::configure::environment_contents: !!null
