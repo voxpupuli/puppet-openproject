@@ -5,10 +5,9 @@
 #
 ###############################################################################
 openproject::enable_full_text_extract: false
-openproject::install::package_ensure: 'present'
 openproject::install::package_name: 'openproject'
-openproject::release_major: 17
-openproject::repository::release_major: 17
+openproject::release_major: 16
+openproject::repository::release_major: 16
 ###############################################################################
 #
 # Software configuration module settings

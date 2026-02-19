@@ -4,14 +4,14 @@ require 'spec_helper'
 
 describe 'openproject' do
   let(:hiera_config) { 'hiera.yaml' }
-  let(:node) { 'testhost.example.com' }
+  let(:node) { 'openproject.example.com' }
 
   test_on = {
     hardwaremodels: ['x86_64'],
     supported_os: [
       {
         'operatingsystem'        => 'Debian',
-        'operatingsystemrelease' => ['11', '12'],
+        'operatingsystemrelease' => %w[11 12],
       },
     ],
   }
@@ -30,53 +30,50 @@ describe 'openproject' do
           it {
             is_expected.to compile.with_all_deps
           }
+
           it {
             is_expected.to contain_class(
-              'openproject::system_requirements',
+              'openproject::system_requirements'
             ).that_comes_before(
-              'Class[openproject::repository]',
+              'Class[openproject::repository]'
             )
           }
+
           it {
             is_expected.to contain_class(
-              'openproject::repository',
+              'openproject::repository'
             ).that_comes_before(
-              'Class[openproject::install]',
+              'Class[openproject::install]'
             )
           }
+
           it {
             is_expected.to contain_class(
-              'openproject::install',
+              'openproject::install'
             ).that_comes_before(
-              'Class[openproject::configure]',
+              'Class[openproject::configure]'
             )
           }
+
           it {
             is_expected.to contain_class(
-              'openproject::configure',
-            ).that_comes_before(
-              'Class[openproject::service]',
-            )
-          }
-          it {
-            is_expected.to contain_class(
-              'openproject::service',
+              'openproject::configure'
             )
           }
 
           # Required Packages presence
-          system_requirements_packages = [
-            'apt-transport-https',
-            'ca-certificates',
-            'wget',
-            'gpg',
+          system_requirements_packages = %w[
+            apt-transport-https
+            ca-certificates
+            wget
+            gpg
           ]
           system_requirements_packages.each do |package|
             it {
               is_expected.to contain_package(
-                package.to_s,
+                package.to_s
               ).with_ensure(
-                'present',
+                'installed'
               )
             }
           end
@@ -84,7 +81,7 @@ describe 'openproject' do
           # repository presence
           it {
             is_expected.to contain_apt__source(
-              'openproject',
+              'openproject'
             ).with(
               'ensure' => 'present',
               'comment' => 'OpenProject APT repository - https://www.openproject.org/docs/installation-and-operations/installation/packaged/#debian-installation',
@@ -95,45 +92,53 @@ describe 'openproject' do
               },
               'key' => {
                 'name' => 'openproject.asc',
-                'source' => 'https://dl.packager.io/srv/opf/openproject/key'
+                'source' => 'https://dl.packager.io/srv/opf/openproject/key',
+                'checksum' => 'sha256',
+                'checksum_value' => '35ee80b7fca522dc8f418e81ff20ae189e957f0216f1e47c29cca2cd5f0069e0'
               },
               'location' => "https://dl.packager.io/srv/deb/opf/openproject/stable/#{params['release_major']}/debian",
-              'release' => os_facts[:operatingsystemmajrelease].to_s,
-              'repos' => 'main',
+              'release' => os_facts[:os]['distro']['release']['major'],
+              'repos' => 'main'
             )
           }
 
           # module package presence
           it {
             is_expected.to contain_package(
-              'openproject',
-            ).with_ensure(
-              'present',
+              'openproject'
+            ).with(
+              'ensure' => 'present',
+              'mark'   => 'none'
             )
           }
 
           # Configuration
           it {
             is_expected.to contain_file(
-              '/etc/openproject',
+              '/etc/openproject'
             ).with(
               'ensure' => 'directory',
               'mode' => '0750',
               'owner' => 'openproject',
-              'group' => 'openproject',
+              'group' => 'openproject'
             )
           }
 
-          # configuration - installer.dat
+          # configuration - installer.dat reference file
           it {
             is_expected.to contain_file(
-              '/etc/openproject/installer.dat',
+              '/etc/openproject/installer.dat.puppet'
             ).with(
               'ensure' => 'file',
               # rubocop:disable Layout/TrailingWhitespace
               'content' => "memcached/autoinstall install
+openproject/admin_email administrator@openproject.example.com
+openproject/default_language en
 openproject/edition default
-postgres/autoinstall reuse
+postgres/addon_version v1
+postgres/autoinstall install
+postgres/db_name openproject
+postgres/db_password SuperSecretStringSuchSecure
 postgres/db_username openproject
 postgres/dbhost localhost
 postgres/dbport 5432
@@ -141,27 +146,32 @@ postgres/retry retry
 repositories/git-install skip
 repositories/svn-install skip
 server/autoinstall install
-server/hostname testhost.example.com
+server/hostname openproject.example.com
 server/server_path_prefix 
-server/ssl yes
-server/ssl_cert /etc/openproject/ssl/cert.pem
-server/ssl_key /etc/openproject/ssl/key.pem
-
+server/ssl no
 server/variant apache2
 ",
               # rubocop:enable Layout/TrailingWhitespace
-              'notify' => 'Exec[configure openproject]',
               'owner' => 'openproject',
-              'group' => 'openproject',
+              'group' => 'openproject'
             )
           }
 
           it {
             is_expected.to contain_exec(
-              'configure openproject',
+              'configure openproject'
             ).with(
-              'command' => '/usr/bin/openproject configure',
-              'refreshonly' => true,
+              'creates' => '/etc/openproject/installer.dat',
+              'provider' => 'shell'
+            )
+          }
+
+          it {
+            is_expected.to contain_exec(
+              'reconfigure openproject'
+            ).with(
+              'onlyif' => 'test -f /etc/openproject/installer.dat',
+              'provider' => 'shell'
             )
           }
         end
@@ -175,15 +185,75 @@ server/variant apache2
             is_expected.to compile.with_all_deps
           }
 
-          full_text_extract_packages = [
-            'catdoc',
-            'unrtf',
-            'poppler-utils',
-            'tesseract-ocr',
+          full_text_extract_packages = %w[
+            catdoc
+            unrtf
+            poppler-utils
+            tesseract-ocr
           ]
           full_text_extract_packages.each do |package|
-            it { is_expected.to contain_package(package.to_s).with_ensure('present') }
+            it { is_expected.to contain_package(package.to_s).with_ensure('installed') }
           end
+        end
+
+        context 'with release_major as String' do
+          let(:params) do
+            { 'release_major' => 'seventeen' }
+          end
+
+          it {
+            is_expected.to compile.and_raise_error(%r{expects an Integer value})
+          }
+        end
+
+        context 'with release_major as Boolean' do
+          let(:params) do
+            { 'release_major' => true }
+          end
+
+          it {
+            is_expected.to compile.and_raise_error(%r{expects an Integer value})
+          }
+        end
+
+        context 'with enable_full_text_extract as String' do
+          let(:params) do
+            { 'enable_full_text_extract' => 'yes' }
+          end
+
+          it {
+            is_expected.to compile.and_raise_error(%r{expects a Boolean value})
+          }
+        end
+
+        context 'with enable_full_text_extract as Integer' do
+          let(:params) do
+            { 'enable_full_text_extract' => 1 }
+          end
+
+          it {
+            is_expected.to compile.and_raise_error(%r{expects a Boolean value})
+          }
+        end
+
+        context 'on unsupported operating system' do
+          let(:facts) do
+            os_facts.merge(os: os_facts[:os].merge('name' => 'Ubuntu'))
+          end
+
+          it {
+            is_expected.to compile.and_raise_error(%r{Unsupported Operating system!})
+          }
+        end
+
+        context 'on unsupported architecture' do
+          let(:facts) do
+            os_facts.merge(os: os_facts[:os].merge('architecture' => 'arm64'))
+          end
+
+          it {
+            is_expected.to compile.and_raise_error(%r{Unsupported hardware achitecture!})
+          }
         end
       end
     end

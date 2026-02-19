@@ -1,14 +1,11 @@
 <%- | Hash[String, Any] $installer_dat_contents | -%>
 <% include stdlib -%>
 <% $installer_dat_contents.keys.sort.each |$key| { -%>
-<% unless ($installer_dat_contents[$key] =~ Undef or $key == 'server/variant' ){ -%>
+<% unless ($installer_dat_contents[$key] =~ Undef){ -%>
 <% if type($installer_dat_contents[$key]) == Type[String] { -%>
 <%= $key %> <%= regsubst($installer_dat_contents[$key], "^\'|\'$", '', 'G') %>
-<% } -%>
+<% } else { -%>
 <%= $key %> <%= $installer_dat_contents[$key] %>
 <% } -%>
-<% if $key == 'server/variant' { -%>
-
-<%= $key %> <%= $installer_dat_contents[$key] %>
 <% } -%>
 <% } -%>

@@ -16,7 +16,6 @@ openproject::full_text_extract_packages:
   - 'unrtf'
   - 'poppler-utils'
   - 'tesseract-ocr'
-openproject::install::package_hold: 'none'
 openproject::system_requirements:
   - 'apt-transport-https'
   - 'ca-certificates'

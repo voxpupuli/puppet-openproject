@@ -1,88 +1,39 @@
 # frozen_string_literal: true
 
-require 'bundler'
-require 'puppet_litmus/rake_tasks' if Gem.loaded_specs.key? 'puppet_litmus'
-require 'puppetlabs_spec_helper/rake_tasks'
-require 'puppet-syntax/tasks/puppet-syntax'
-require 'github_changelog_generator/task' if Gem.loaded_specs.key? 'github_changelog_generator'
-require 'puppet-strings/tasks' if Gem.loaded_specs.key? 'puppet-strings'
-
-def changelog_user
-  return unless Rake.application.top_level_tasks.include? "changelog"
-  returnVal = nil || JSON.load(File.read('metadata.json'))['author']
-  raise "unable to find the changelog_user in .sync.yml, or the author in metadata.json" if returnVal.nil?
-  puts "GitHubChangelogGenerator user:#{returnVal}"
-  returnVal
+begin
+  require 'voxpupuli/test/rake'
+rescue LoadError
+  # only available if gem group test is installed
 end
 
-def changelog_project
-  return unless Rake.application.top_level_tasks.include? "changelog"
+begin
+  require 'voxpupuli/acceptance/rake'
 
-  returnVal = nil
-  returnVal ||= begin
-    metadata_source = JSON.load(File.read('metadata.json'))['source']
-    metadata_source_match = metadata_source && metadata_source.match(%r{.*\/([^\/]*?)(?:\.git)?\Z})
+  # Ensure fixtures are prepared before beaker and cleaned up after a successful
+  # run, but only when configure_beaker is set to use :fixtures for module
+  # installation. Other modes (:metadata, nil) handle modules differently and
+  # do not require fixture management.
+  spec_helper_acceptance = File.join(__dir__, 'spec', 'spec_helper_acceptance.rb')
+  if Rake::Task.task_defined?(:beaker) &&
+     File.exist?(spec_helper_acceptance) &&
+     File.read(spec_helper_acceptance).match?(%r{configure_beaker\(.*modules:\s*:fixtures})
+    task beaker: ['fixtures:prep']
 
-    metadata_source_match && metadata_source_match[1]
+    Rake::Task[:beaker].enhance do
+      Rake::Task['fixtures:clean'].invoke
+    end
   end
-
-  raise "unable to find the changelog_project in .sync.yml or calculate it from the source in metadata.json" if returnVal.nil?
-
-  puts "GitHubChangelogGenerator project:#{returnVal}"
-  returnVal
+rescue LoadError
+  # only available if gem group acceptance is installed
 end
 
-def changelog_future_release
-  return unless Rake.application.top_level_tasks.include? "changelog"
-  returnVal = "v%s" % JSON.load(File.read('metadata.json'))['version']
-  raise "unable to find the future_release (version) in metadata.json" if returnVal.nil?
-  puts "GitHubChangelogGenerator future_release:#{returnVal}"
-  returnVal
-end
-
-PuppetLint.configuration.send('disable_relative')
-
-
-if Gem.loaded_specs.key? 'github_changelog_generator'
-  GitHubChangelogGenerator::RakeTask.new :changelog do |config|
-    raise "Set CHANGELOG_GITHUB_TOKEN environment variable eg 'export CHANGELOG_GITHUB_TOKEN=valid_token_here'" if Rake.application.top_level_tasks.include? "changelog" and ENV['CHANGELOG_GITHUB_TOKEN'].nil?
-    config.user = "#{changelog_user}"
-    config.project = "#{changelog_project}"
-    config.future_release = "#{changelog_future_release}"
-    config.exclude_labels = ['maintenance']
-    config.header = "# Change log\n\nAll notable changes to this project will be documented in this file. The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/) and this project adheres to [Semantic Versioning](http://semver.org)."
-    config.add_pr_wo_labels = true
-    config.issues = false
-    config.merge_prefix = "### UNCATEGORIZED PRS; LABEL THEM ON GITHUB"
-    config.configure_sections = {
-      "Changed" => {
-        "prefix" => "### Changed",
-        "labels" => ["backwards-incompatible"],
-      },
-      "Added" => {
-        "prefix" => "### Added",
-        "labels" => ["enhancement", "feature"],
-      },
-      "Fixed" => {
-        "prefix" => "### Fixed",
-        "labels" => ["bug", "documentation", "bugfix"],
-      },
-    }
-  end
+begin
+  require 'voxpupuli/release/rake_tasks'
+rescue LoadError
+  # only available if gem group releases is installed
 else
-  desc 'Generate a Changelog from GitHub'
-  task :changelog do
-    raise <<EOM
-The changelog tasks depends on recent features of the github_changelog_generator gem.
-Please manually add it to your .sync.yml for now, and run `pdk update`:
----
-Gemfile:
-  optional:
-    ':development':
-      - gem: 'github_changelog_generator'
-        version: '~> 1.15'
-        condition: "Gem::Version.new(RUBY_VERSION.dup) >= Gem::Version.new('2.3.0')"
-EOM
-  end
+  GCGConfig.user = 'voxpupuli'
+  GCGConfig.project = 'puppet-extlib'
 end
 
+# vim: syntax=ruby

@@ -1,0 +1,16 @@
+---
+HOSTS:
+  debian11:
+    roles:
+      - agent
+    platform: debian-11-amd64
+    box: debian/bullseye64
+    hypervisor: vagrant_libvirt
+    vagrant_memsize: 2048
+    vagrant_cpus: 2
+CONFIG:
+  nfs_server: none
+  type: aio
+  libvirt:
+    uri: qemu:///system
+  hostname: 'openproject.example.com'

@@ -1,0 +1,246 @@
+---
+# GitLab CI/CD pipeline for neatnerds-openproject
+#
+# Uses the Voxpupuli voxbox container image, which ships all required gems
+# (voxpupuli-test, puppet-lint, metadata-json-lint, rubocop, etc.) and tools
+# (yamllint, r10k) pre-installed. Everything is ready to use out of the box.
+#
+# Container image: ghcr.io/voxpupuli/voxbox
+# Source:          https://github.com/voxpupuli/container-voxbox
+#
+# Supported OpenVox versions: >= 7.16, < 9.0.0 (per metadata.json)
+# Test matrix:                OpenVox 7 and 8
+#
+###############################################################################
+# Stages
+#
+# QA   — Code-quality checks. These are Puppet-version-agnostic so they run
+#         once on voxbox:8 (the latest image).
+# Test — Unit tests via rspec-puppet. Catalogue compilation IS version-
+#         sensitive, so these run against both OpenVox 7 and 8.
+###############################################################################
+stages:
+  - QA
+  - Test
+#
+###############################################################################
+# Global variables
+#
+# RAKE   — Invokes the Rakefile bundled inside the voxbox container at
+#           /Rakefile. This guarantees the rake tasks match the gems shipped
+#           in the image, avoiding version mismatches that could occur when
+#           using the module's own Rakefile with a different gem set.
+#
+# TMPDIR — Ruby's Dir.tmpdir (used by Tempfile, Dir.mktmpdir, etc.) refuses
+#           directories that are world-writable. The voxbox container's /tmp
+#           is world-writable, causing rake tasks like strings:validate,
+#           rubocop, puppet parser validate, and rspec-puppet to crash with
+#           "could not find a temporary directory". We override TMPDIR to a
+#           private directory inside the CI build tree so all Ruby-based jobs
+#           work without per-job workarounds.
+###############################################################################
+variables:
+  RAKE: rake -f /Rakefile
+  TMPDIR: ${CI_PROJECT_DIR}/.tmp
+#
+###############################################################################
+# Default image
+#
+# All jobs inherit this unless overridden. The entrypoint is cleared because
+# the voxbox image sets a default entrypoint that is incompatible with GitLab
+# Runner's script execution model.
+###############################################################################
+default:
+  image:
+    name: ghcr.io/voxpupuli/voxbox:8
+    entrypoint: [""]
+  before_script:
+    - mkdir -p "${TMPDIR}"
+#
+###############################################################################
+# Hidden job templates
+#
+# .qa   — Anchors the QA stage for all quality-check jobs.
+# .test — Anchors the Test stage for all test jobs.
+#
+# YAML anchors
+#
+# &not_tag  — Matches any pipeline that is NOT triggered by a git tag.
+# &mr       — Matches merge-request pipelines (and excludes tags).
+#              Used as the first entry in rules: lists so that MR
+#              pipelines always run the job regardless of file changes.
+###############################################################################
+.rules:
+  - &not_tag
+    if: '$CI_COMMIT_TAG == null'
+  - &mr
+    if: >-
+      $CI_COMMIT_TAG == null
+      && $CI_PIPELINE_SOURCE == "merge_request_event"
+#
+.qa:
+  stage: QA
+#
+.test:
+  stage: Test
+#
+###############################################################################
+#                                                                             #
+#   QA Stage                                                                  #
+#                                                                             #
+#   All QA jobs run on voxbox:8 (the default image). Linting, syntax, and     #
+#   style checks are Puppet-version-agnostic so a single run is sufficient.   #
+#                                                                             #
+###############################################################################
+#
+# qa-check
+#   Runs `rake check` which validates:
+#     - No trailing whitespace in manifests
+#     - No symlinks where regular files are expected
+#     - Files match .gitignore expectations
+#   Always runs on non-tag pipelines (these checks are cheap and universal).
+qa-check:
+  extends: .qa
+  script:
+    - $RAKE check
+  rules:
+    - *not_tag
+#
+# qa-lint
+#   Runs `rake voxpupuli:custom:lint_all` which invokes puppet-lint with the
+#   Voxpupuli-specific rule set on all .pp manifests. This enforces a
+#   consistent Puppet coding style (indentation, quoting, resource ordering,
+#   variable scoping, etc.).
+#   Triggers: when any .pp file changes, or on merge requests.
+qa-lint:
+  extends: .qa
+  script:
+    - $RAKE voxpupuli:custom:lint_all
+  rules:
+    - *mr
+    - if: '$CI_COMMIT_TAG == null'
+      changes:
+        - '**/*.pp'
+#
+# qa-yamllint
+#   Runs the yamllint binary (not a rake task) directly against the data/
+#   directory. Validates YAML syntax and style (indentation, line length,
+#   trailing spaces, document markers, etc.) for all Hiera data files.
+#   Triggers: when any YAML file under data/ changes, or on merge requests.
+qa-yamllint:
+  extends: .qa
+  script:
+    - yamllint -c .yamllint.yaml data/
+  rules:
+    - *mr
+    - if: '$CI_COMMIT_TAG == null'
+      changes:
+        - 'data/**/*.yaml'
+#
+# qa-metadata_lint
+#   Runs `rake metadata_lint` which invokes metadata-json-lint to validate
+#   metadata.json against the Puppet module metadata specification. Checks
+#   for required fields, valid version ranges, dependency formatting, and
+#   OS support declarations.
+#   Triggers: when metadata.json changes, or on merge requests.
+qa-metadata_lint:
+  extends: .qa
+  script:
+    - $RAKE metadata_lint
+  rules:
+    - *mr
+    - if: '$CI_COMMIT_TAG == null'
+      changes:
+        - metadata.json
+#
+# qa-rubocop
+#   Runs `rake rubocop` which invokes RuboCop to lint all Ruby files
+#   (spec tests, Rakefile, custom facts/functions if any) against the
+#   Voxpupuli style guide. Ensures consistent Ruby style across the module.
+#   Triggers: when any .rb file changes, or on merge requests.
+qa-rubocop:
+  extends: .qa
+  script:
+    - $RAKE rubocop
+  rules:
+    - *mr
+    - if: '$CI_COMMIT_TAG == null'
+      changes:
+        - '**/*.rb'
+#
+# qa-syntax
+#   Runs `rake syntax` which validates the syntax of:
+#     - Puppet manifests  (.pp)     via `puppet parser validate`
+#     - ERB templates     (.erb)    via Ruby's ERB syntax check
+#     - EPP templates     (.epp)    via `puppet epp validate`
+#     - Hiera YAML        (.yaml)   via YAML.safe_load
+#   Triggers: when manifests, templates, or data files change, or on merge
+#   requests.
+qa-syntax:
+  extends: .qa
+  script:
+    - $RAKE syntax
+  rules:
+    - *mr
+    - if: '$CI_COMMIT_TAG == null'
+      changes:
+        - 'data/**/*.yaml'
+        - 'manifests/**/*.pp'
+        - 'templates/**/*.epp'
+        - 'templates/**/*.erb'
+#
+# qa-strings
+#   Runs `rake strings:validate:reference` which uses puppet-strings to
+#   validate that REFERENCE.md is up-to-date with the inline documentation
+#   in the Puppet code (classes, defined types, functions, etc.).
+#   Only runs when REFERENCE.md exists in the repository.
+#   Triggers: always on non-tag pipelines when REFERENCE.md is present.
+qa-strings:
+  extends: .qa
+  script:
+    - $RAKE strings:validate:reference
+  rules:
+    - if: '$CI_COMMIT_TAG == null'
+      exists:
+        - REFERENCE.md
+#
+###############################################################################
+#                                                                             #
+#   Test Stage                                                                #
+#                                                                             #
+#   Unit tests compile Puppet catalogues, which IS version-sensitive.         #
+#   We therefore run them against both OpenVox 7 and 8 using a parallel       #
+#   matrix.                                                                   #
+#                                                                             #
+###############################################################################
+#
+# test-unit
+#   Runs `rake spec` which invokes rspec-puppet to:
+#     1. Compile catalogues for each class/defined type under test
+#     2. Assert resource existence, parameter values, relationships, etc.
+#     3. Report coverage metrics
+#   The parallel matrix runs the same test suite against voxbox:7 and voxbox:8,
+#   ensuring compatibility across the supported OpenVox version range.
+#   Triggers: when manifests, templates, data, or spec files change, or on
+#   merge requests.
+test-unit:
+  extends: .test
+  image:
+    name: ghcr.io/voxpupuli/voxbox:${OPENVOX_MAJOR}
+    entrypoint: [""]
+  parallel:
+    matrix:
+      - OPENVOX_MAJOR:
+          - 7
+          - 8
+  script:
+    - $RAKE spec
+  rules:
+    - *mr
+    - if: '$CI_COMMIT_TAG == null'
+      changes:
+        - 'data/**/*.yaml'
+        - 'manifests/**/*.pp'
+        - 'spec/**/*_spec.rb'
+        - 'templates/**/*.epp'
+        - 'templates/**/*.erb'

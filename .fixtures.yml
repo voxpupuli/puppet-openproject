@@ -1,16 +1,6 @@
 ---
 fixtures:
-  symlinks:
   repositories:
-#    apt:
-#      repo: "git@gitlab.neatnerds.lan:mirrors/puppetlabs/modules/puppetlabs-apt.git"
-#      ref: "v9.4.0"
-#    stdlib:
-#      repo: "git@gitlab.neatnerds.lan:mirrors/puppetlabs/modules/puppetlabs-stdlib.git"
-#      ref: "v9.5.0"
-    apt:
-      repo: 'https://github.com/puppetlabs/puppetlabs-apt.git'
-      ref: 'v9.4.0'
-    stdlib:
-      repo: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
-      ref: 'v9.5.0'
+    apt: 'https://github.com/puppetlabs/puppetlabs-apt.git'
+    stdlib: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
+...

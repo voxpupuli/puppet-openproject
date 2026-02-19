@@ -1,0 +1,24 @@
+---
+openproject::configure::installer_dat_contents:
+  'memcached/autoinstall': 'install'
+  'openproject/admin_email': "administrator@%{facts.fqdn}"
+  'openproject/edition': 'default'
+  'openproject/default_language': 'en'
+  'postgres/retry': 'install'
+  'postgres/db_host': 'localhost'
+  'postgres/addon_version': 'v1'
+  'postgres/autoinstall': 'install'
+  'postgres/db_port': 5432
+  'postgres/db_name': 'openproject'
+  'postgres/db_username': 'openproject'
+  'postgres/db_password': 'SuperSecretStringSuchSecure'
+  'repositories/git-install': 'skip'
+  'repositories/svn-install': 'skip'
+  'server/autoinstall': 'install'
+  'server/hostname': "%{facts.fqdn}"
+  'server/ssl': 'no'
+  'server/variant': 'apache2'
+  'server/server_path_prefix': ''
+  'repositories/api-key': 'AnotherAweSomeApiKeyAllAccessAway'
+openproject::configure::logoutput: 'true'
+...

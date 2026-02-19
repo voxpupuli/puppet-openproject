@@ -2,13 +2,13 @@
 #
 # @api private
 class openproject::system_requirements {
-  package { lookup('openproject::system_requirements'):
-    ensure => 'present',
-  }
+  stdlib::ensure_packages(
+    lookup('openproject::system_requirements')
+  )
 
   if $openproject::enable_full_text_extract {
-    package { lookup('openproject::full_text_extract_packages'):
-      ensure => 'present',
-    }
+    stdlib::ensure_packages(
+      lookup('openproject::full_text_extract_packages')
+    )
   }
 }
