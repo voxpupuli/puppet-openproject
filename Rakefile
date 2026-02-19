@@ -33,7 +33,7 @@ rescue LoadError
   # only available if gem group releases is installed
 else
   GCGConfig.user = 'voxpupuli'
-  GCGConfig.project = 'puppet-extlib'
+  GCGConfig.project = 'puppet-openproject'
 end
 
 # vim: syntax=ruby
