@@ -31,31 +31,30 @@ stages:
 #           in the image, avoiding version mismatches that could occur when
 #           using the module's own Rakefile with a different gem set.
 #
-# TMPDIR — Ruby's Dir.tmpdir (used by Tempfile, Dir.mktmpdir, etc.) refuses
-#           directories that are world-writable. The voxbox container's /tmp
-#           is world-writable, causing rake tasks like strings:validate,
-#           rubocop, puppet parser validate, and rspec-puppet to crash with
-#           "could not find a temporary directory". We override TMPDIR to a
-#           private directory inside the CI build tree so all Ruby-based jobs
-#           work without per-job workarounds.
 ###############################################################################
 variables:
   RAKE: rake -f /Rakefile
-  TMPDIR: ${CI_PROJECT_DIR}/.tmp
 #
 ###############################################################################
-# Default image
+# Default image and before_script
 #
 # All jobs inherit this unless overridden. The entrypoint is cleared because
 # the voxbox image sets a default entrypoint that is incompatible with GitLab
 # Runner's script execution model.
+#
+# TMPDIR workaround: Ruby's Dir.tmpdir (used by Tempfile, Dir.mktmpdir, etc.)
+# refuses directories that are world-writable. The voxbox container's /tmp is
+# world-writable, causing rake tasks like strings:validate, rubocop, puppet
+# parser validate, and rspec-puppet to crash with "could not find a temporary
+# directory". We use mktemp -d to create a private temporary directory with
+# 0700 permissions and export it as TMPDIR for the rest of the job.
 ###############################################################################
 default:
   image:
     name: ghcr.io/voxpupuli/voxbox:8
     entrypoint: [""]
   before_script:
-    - mkdir -p "${TMPDIR}"
+    - export TMPDIR="$(mktemp -d)"
 #
 ###############################################################################
 # Hidden job templates
@@ -230,9 +229,16 @@ test-unit:
     entrypoint: [""]
   parallel:
     matrix:
-      - OPENVOX_MAJOR:
-          - 7
-          - 8
+      # voxbox:7 ships voxpupuli-test 7.1.0 which loads puppetlabs_spec_helper.
+      # PSH splits spec files across CI nodes when CI_NODE_TOTAL > 1, but
+      # parallel:matrix: sets CI_NODE_TOTAL=2 (one per matrix entry). Override
+      # to 1 so the FULL spec suite runs on this node.
+      # See: doc/known_bugs/voxbox7-psh-spec-splitting.md
+      - OPENVOX_MAJOR: "7"
+        CI_NODE_TOTAL: "1"
+      # voxbox:8 ships voxpupuli-test 13.x which uses puppet_fixtures and does
+      # not check CI_NODE_TOTAL. No override needed.
+      - OPENVOX_MAJOR: "8"
   script:
     - $RAKE spec
   rules:

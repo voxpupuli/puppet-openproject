@@ -27,6 +27,10 @@ describe 'openproject::repository' do
         }
 
         it {
+          is_expected.to contain_class('openproject::repository')
+        }
+
+        it {
           is_expected.to contain_apt__source(
             'openproject'
           ).with(

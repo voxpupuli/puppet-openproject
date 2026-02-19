@@ -12,5 +12,6 @@
 /Guardfile
 bolt-debug.log
 .rerun.json
-/doc/
+/doc/*
+!/doc/known_bugs/
 /.yardoc/
