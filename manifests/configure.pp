@@ -10,6 +10,8 @@ class openproject::configure (
   file { $root_config_dir:
     ensure => 'directory',
     mode   => '0750',
+    owner  => lookup('openproject::system_user'),
+    group  => lookup('openproject::system_group'),
   }
 
   # https://stackoverflow.com/a/45616735
@@ -17,6 +19,8 @@ class openproject::configure (
     ensure  => 'file',
     content => epp('openproject/installer.dat.epp', { installer_dat_contents => $installer_dat_contents }),
     mode    => $file_mode,
+    owner   => lookup('openproject::system_user'),
+    group   => lookup('openproject::system_group'),
     require => File[$root_config_dir],
     notify  => Exec['configure openproject'],
   }
@@ -25,6 +29,8 @@ class openproject::configure (
     file { "${root_config_dir}/conf.d":
       ensure  => 'directory',
       mode    => '0750',
+      owner   => lookup('openproject::system_user'),
+      group   => lookup('openproject::system_group'),
       require => File[$root_config_dir],
     }
 
@@ -32,6 +38,8 @@ class openproject::configure (
       ensure  => 'file',
       content => epp('openproject/env.epp', { environment_contents => $environment_contents }),
       mode    => $file_mode,
+      owner   => lookup('openproject::system_user'),
+      group   => lookup('openproject::system_group'),
       require => File["${root_config_dir}/conf.d"],
       notify  => Exec['configure openproject'],
     }

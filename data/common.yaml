@@ -6,7 +6,7 @@ openproject::system_user: 'openproject'
 openproject::system_group: 'openproject'
 openproject::configure::root_config_dir: '/etc/openproject'
 # installer.dat sane defaults
-openproject::configure::file_mode: '0600'
+openproject::configure::file_mode: '0640'
 openproject::configure::installer_dat_contents:
   'memcached/autoinstall': 'install'
   'openproject/admin_email': !!null

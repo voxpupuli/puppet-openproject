@@ -17,7 +17,6 @@ describe 'openproject::configure' do
   }
   on_supported_os(test_on).each do |os, os_facts|
     context 'on openproject release 14' do
-
       context "on #{os}" do
         let(:facts) do
           os_facts
@@ -35,6 +34,8 @@ describe 'openproject::configure' do
             ).with(
               'ensure' => 'directory',
               'mode' => '0750',
+              'owner' => 'openproject',
+              'group' => 'openproject',
             )
           }
 
@@ -44,6 +45,7 @@ describe 'openproject::configure' do
               '/etc/openproject/installer.dat',
             ).with(
               'ensure' => 'file',
+              # rubocop:disable Layout/TrailingWhitespace
               'content' => "memcached/autoinstall install
 openproject/edition default
 postgres/autoinstall reuse
@@ -59,9 +61,13 @@ server/server_path_prefix
 server/ssl yes
 server/ssl_cert /etc/openproject/ssl/cert.pem
 server/ssl_key /etc/openproject/ssl/key.pem
+
 server/variant apache2
 ",
+              # rubocop:enable Layout/TrailingWhitespace
               'notify' => 'Exec[configure openproject]',
+              'owner' => 'openproject',
+              'group' => 'openproject',
             )
           }
 
@@ -100,6 +106,8 @@ server/variant apache2
             ).with(
               'ensure' => 'directory',
               'mode' => '0750',
+              'owner' => 'openproject',
+              'group' => 'openproject',
             )
           }
 
@@ -119,6 +127,8 @@ SMTP_PORT="587"
 SMTP_USER_NAME="user"
 ',
               'notify' => 'Exec[configure openproject]',
+              'owner' => 'openproject',
+              'group' => 'openproject',
             )
           }
 

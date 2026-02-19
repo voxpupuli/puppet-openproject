@@ -19,6 +19,5 @@ openproject::apt::sources:
       name: 'openproject.asc'
       source: 'https://dl.packager.io/srv/opf/openproject/key'
     location: "https://dl.packager.io/srv/deb/opf/openproject/stable/%{lookup('openproject::release_major')}/debian"
-    notify_update: true
     release: "%{facts.os.distro.release.major}"
     repos: 'main'
