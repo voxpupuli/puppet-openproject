@@ -1,6 +1,6 @@
 {
   "name": "puppet-openproject",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "Vox Pupuli",
   "summary": "A puppet module to install and configure OpenProject",
   "license": "GPL-3.0-or-later",
