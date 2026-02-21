@@ -34,7 +34,7 @@ describe 'openproject::install' do
             'ensure' => 'present',
             'mark'   => 'none'
           ).that_requires(
-            'Class[openproject::repository]'
+            ['Class[openproject::repository]', 'Class[apt::update]']
           )
         }
       end
@@ -59,7 +59,7 @@ describe 'openproject::install' do
             'ensure' => '14.5.0-1',
             'mark'   => 'hold'
           ).that_requires(
-            'Class[openproject::repository]'
+            ['Class[openproject::repository]', 'Class[apt::update]']
           )
         }
       end

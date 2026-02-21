@@ -109,6 +109,8 @@ describe 'openproject' do
             ).with(
               'ensure' => 'present',
               'mark'   => 'none'
+            ).that_requires(
+              ['Class[openproject::repository]', 'Class[apt::update]']
             )
           }
 

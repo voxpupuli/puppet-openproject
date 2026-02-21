@@ -18,6 +18,6 @@ class openproject::install (
   package { $package_name:
     ensure  => $package_ensure,
     mark    => $package_hold,
-    require => Class['openproject::repository'],
+    require => [Class['openproject::repository'], Class['apt::update']],
   }
 }
