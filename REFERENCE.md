@@ -26,6 +26,9 @@
 
 ### <a name="openproject"></a>`openproject`
 
+SPDX-FileCopyrightText: 2026 Vox Pupuli
+SPDX-License-Identifier: GPL-3.0-only
+
 This is the public class that sets up openproject
 
 #### Parameters
@@ -51,7 +54,8 @@ extraction of attachments.
 
 ### <a name="openproject--configure"></a>`openproject::configure`
 
-Configures openproject
+SPDX-FileCopyrightText: 2026 Vox Pupuli
+SPDX-License-Identifier: GPL-3.0-only
 
 #### Parameters
 
