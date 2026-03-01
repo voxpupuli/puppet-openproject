@@ -1,0 +1,16 @@
+---
+server:
+  name: 'openvox-mcp'
+  version: '0.1.0'
+transport: 'stdio'
+log_level: 'standard'  # minimal | standard | comprehensive
+plugins:
+  enabled: true
+  load:
+    - 'puppet'
+security:
+  deny_list: 'default'  # default | custom path
+  network_allowlist:
+    - "https://forge.puppet.com/*"
+    - "https://api.github.com/*"
+    - "https://rubygems.org/*"
