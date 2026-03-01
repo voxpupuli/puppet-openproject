@@ -17,6 +17,14 @@ describe 'openproject::system_requirements' do
         'operatingsystem'        => 'Debian',
         'operatingsystemrelease' => %w[11 12],
       },
+      {
+        'operatingsystem'        => 'RedHat',
+        'operatingsystemrelease' => %w[9],
+      },
+      {
+        'operatingsystem'        => 'CentOS',
+        'operatingsystemrelease' => %w[9],
+      },
     ],
   }
   on_supported_os(test_on).each do |os, os_facts|
@@ -24,6 +32,20 @@ describe 'openproject::system_requirements' do
       let(:facts) do
         os_facts
       end
+
+      sys_packages = case os_facts[:os]['family']
+                     when 'Debian'
+                       %w[apt-transport-https ca-certificates wget gpg]
+                     when 'RedHat'
+                       %w[ca-certificates wget gnupg2]
+                     end
+
+      fte_packages = case os_facts[:os]['family']
+                     when 'Debian'
+                       %w[catdoc unrtf poppler-utils tesseract-ocr]
+                     when 'RedHat'
+                       %w[catdoc unrtf poppler-utils tesseract]
+                     end
 
       context 'with default params' do
         it {
@@ -34,12 +56,7 @@ describe 'openproject::system_requirements' do
           is_expected.to contain_class('openproject::system_requirements')
         }
 
-        %w[
-          apt-transport-https
-          ca-certificates
-          wget
-          gpg
-        ].each do |package|
+        sys_packages.each do |package|
           it {
             is_expected.to contain_package(package).with_ensure('installed')
           }
@@ -55,12 +72,7 @@ describe 'openproject::system_requirements' do
           is_expected.to compile.with_all_deps
         }
 
-        %w[
-          catdoc
-          unrtf
-          poppler-utils
-          tesseract-ocr
-        ].each do |package|
+        fte_packages.each do |package|
           it {
             is_expected.to contain_package(package).with_ensure('installed')
           }

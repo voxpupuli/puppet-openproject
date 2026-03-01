@@ -1,0 +1,16 @@
+---
+openproject::repository::yum_config:
+  descr: 'OpenProject RPM repository'
+  enabled: 1
+  gpgcheck: 0
+  repo_gpgcheck: 1
+  gpgkey: 'https://dl.packager.io/srv/opf/openproject/key'
+openproject::full_text_extract_packages:
+  - 'catdoc'
+  - 'unrtf'
+  - 'poppler-utils'
+  - 'tesseract'
+openproject::system_requirements:
+  - 'ca-certificates'
+  - 'wget'
+  - 'gnupg2'

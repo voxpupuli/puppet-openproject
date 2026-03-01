@@ -1,0 +1,16 @@
+---
+HOSTS:
+  centos9:
+    roles:
+      - agent
+    platform: el-9-x86_64
+    box: generic/centos9s
+    hypervisor: vagrant_libvirt
+    vagrant_memsize: 2048
+    vagrant_cpus: 2
+CONFIG:
+  nfs_server: none
+  type: aio
+  libvirt:
+    uri: qemu:///system
+  hostname: 'openproject.example.com'

@@ -16,6 +16,14 @@ describe 'openproject' do
         'operatingsystem'        => 'Debian',
         'operatingsystemrelease' => %w[11 12],
       },
+      {
+        'operatingsystem'        => 'RedHat',
+        'operatingsystemrelease' => %w[9],
+      },
+      {
+        'operatingsystem'        => 'CentOS',
+        'operatingsystemrelease' => %w[9],
+      },
     ],
   }
   on_supported_os(test_on).each do |os, os_facts|
@@ -28,6 +36,20 @@ describe 'openproject' do
         let(:facts) do
           os_facts
         end
+
+        sys_packages = case os_facts[:os]['family']
+                       when 'Debian'
+                         %w[apt-transport-https ca-certificates wget gpg]
+                       when 'RedHat'
+                         %w[ca-certificates wget gnupg2]
+                       end
+
+        fte_packages = case os_facts[:os]['family']
+                       when 'Debian'
+                         %w[catdoc unrtf poppler-utils tesseract-ocr]
+                       when 'RedHat'
+                         %w[catdoc unrtf poppler-utils tesseract]
+                       end
 
         context 'with default params' do
           it {
@@ -64,54 +86,18 @@ describe 'openproject' do
             )
           }
 
-          # Required Packages presence
-          system_requirements_packages = %w[
-            apt-transport-https
-            ca-certificates
-            wget
-            gpg
-          ]
-          system_requirements_packages.each do |package|
+          sys_packages.each do |package|
             it {
-              is_expected.to contain_package(
-                package.to_s
-              ).with_ensure(
-                'installed'
-              )
+              is_expected.to contain_package(package).with_ensure('installed')
             }
           end
-
-          # repository presence
-          it {
-            is_expected.to contain_apt__source(
-              'openproject'
-            ).with(
-              'ensure' => 'present',
-              'comment' => 'OpenProject APT repository - https://www.openproject.org/docs/installation-and-operations/installation/packaged/#debian-installation',
-              'include' => {
-                'deb' => true,
-                'src' => false
-
-              },
-              'key' => {
-                'name' => 'openproject.asc',
-                'source' => 'https://dl.packager.io/srv/opf/openproject/key',
-                'checksum' => 'sha256',
-                'checksum_value' => '35ee80b7fca522dc8f418e81ff20ae189e957f0216f1e47c29cca2cd5f0069e0'
-              },
-              'location' => "https://dl.packager.io/srv/deb/opf/openproject/stable/#{params['release_major']}/debian",
-              'release' => os_facts[:os]['distro']['release']['major'],
-              'repos' => 'main'
-            )
-          }
 
           # module package presence
           it {
             is_expected.to contain_package(
               'openproject'
             ).with(
-              'ensure' => 'present',
-              'mark'   => 'none'
+              'ensure' => 'present'
             )
           }
 
@@ -179,6 +165,50 @@ server/variant apache2
           }
         end
 
+        if os_facts[:os]['family'] == 'Debian'
+          context 'Debian-specific: APT source' do
+            it {
+              is_expected.to contain_apt__source(
+                'openproject'
+              ).with(
+                'ensure' => 'present',
+                'comment' => 'OpenProject APT repository - https://www.openproject.org/docs/installation-and-operations/installation/packaged/#debian-installation',
+                'include' => {
+                  'deb' => true,
+                  'src' => false,
+                },
+                'key' => {
+                  'name' => 'openproject.asc',
+                  'source' => 'https://dl.packager.io/srv/opf/openproject/key',
+                  'checksum' => 'sha256',
+                  'checksum_value' => '35ee80b7fca522dc8f418e81ff20ae189e957f0216f1e47c29cca2cd5f0069e0',
+                },
+                'location' => "https://dl.packager.io/srv/deb/opf/openproject/stable/#{params['release_major']}/debian",
+                'release' => os_facts[:os]['distro']['release']['major'],
+                'repos' => 'main'
+              )
+            }
+
+            it {
+              is_expected.to contain_package('openproject').with('mark' => 'none')
+            }
+          end
+        end
+
+        if os_facts[:os]['family'] == 'RedHat'
+          context 'RedHat-specific: yumrepo' do
+            it {
+              is_expected.to contain_yumrepo('openproject').with(
+                'descr' => 'OpenProject RPM repository',
+                'enabled' => 1,
+                'gpgcheck' => 0,
+                'repo_gpgcheck' => 1,
+                'gpgkey' => 'https://dl.packager.io/srv/opf/openproject/key'
+              )
+            }
+          end
+        end
+
         context 'With full_text_extract enabled' do
           let(:params) do
             { 'enable_full_text_extract' => true }
@@ -188,14 +218,8 @@ server/variant apache2
             is_expected.to compile.with_all_deps
           }
 
-          full_text_extract_packages = %w[
-            catdoc
-            unrtf
-            poppler-utils
-            tesseract-ocr
-          ]
-          full_text_extract_packages.each do |package|
-            it { is_expected.to contain_package(package.to_s).with_ensure('installed') }
+          fte_packages.each do |package|
+            it { is_expected.to contain_package(package).with_ensure('installed') }
           end
         end
 
@@ -241,7 +265,7 @@ server/variant apache2
 
         context 'on unsupported operating system' do
           let(:facts) do
-            os_facts.merge(os: os_facts[:os].merge('name' => 'Ubuntu'))
+            os_facts.merge(os: os_facts[:os].merge('name' => 'SLES', 'family' => 'Suse'))
           end
 
           it {

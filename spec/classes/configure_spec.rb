@@ -16,6 +16,14 @@ describe 'openproject::configure' do
         'operatingsystem'        => 'Debian',
         'operatingsystemrelease' => %w[11 12],
       },
+      {
+        'operatingsystem'        => 'RedHat',
+        'operatingsystemrelease' => %w[9],
+      },
+      {
+        'operatingsystem'        => 'CentOS',
+        'operatingsystemrelease' => %w[9],
+      },
     ],
   }
   on_supported_os(test_on).each do |os, os_facts|
