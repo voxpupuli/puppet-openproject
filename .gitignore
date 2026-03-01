@@ -16,4 +16,5 @@ bolt-debug.log
 !/doc/known_bugs/
 /.yardoc/
 /.claude/
+/.mcp.json
 /pkg/

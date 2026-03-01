@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "openvox-mcp": {
+      "command": "/path/to/openvox-mcp/bin/openvox-mcp-stdio",
+      "args": []
+    },
+    "openvox-mcp-http": {
+      "url": "http://localhost:9393"
+    }
+  }
+}

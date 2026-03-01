@@ -343,3 +343,42 @@ vagrant box add debian/bookworm64 --provider libvirt
 * BASTELFREAK NO!
 * ???
 * Get congratz or get feedback
+
+### AI-assisted development (MCP)
+
+This module supports [OpenVox MCP](https://github.com/OpenVoxProject/openvox-mcp)
+for AI governance policy enforcement during development. MCP (Model Context
+Protocol) lets AI coding assistants like Claude Code interact with project-specific
+tooling.
+
+#### Setting up MCP
+
+1. Copy the example configuration:
+
+```bash
+cp .mcp.json.example .mcp.json
+```
+
+2. Edit `.mcp.json` and choose a transport:
+
+| Transport | Use case | Setup |
+|-----------|----------|-------|
+| **stdio** | Local development with a local clone of openvox-mcp | Set `command` to the absolute path of your `openvox-mcp-stdio` binary |
+| **HTTP Streamable** | Remote or shared openvox-mcp server | Set `url` to the running `openvox-mcp-server` endpoint (default `http://localhost:9393`) |
+
+3. Start Claude Code — it will automatically discover the MCP server.
+
+`.mcp.json` is gitignored because it contains machine-specific paths.
+
+#### Available governance tools
+
+| Tool | Purpose |
+|------|---------|
+| `validate_commit` | Check commit messages for policy compliance (trailers, DCO, disclosure) |
+| `check_disclosure` | Verify AI disclosure trailers are present and correctly formatted |
+| `check_file_access` | Check whether a file can be read or written by AI tools |
+| `get_policy` | Retrieve AI governance policy for a specific area or the full policy |
+| `get_tier` | Determine the tier classification for a repository |
+| `format_trailer` | Generate a properly formatted AI disclosure trailer |
+| `validate_license` | Check whether a license SPDX identifier is allowed |
+| `record_provenance` | Record AI provenance information for a contribution |
