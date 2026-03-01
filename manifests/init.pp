@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Vox Pupuli
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # @summary Openproject Main class
 #
 # This is the public class that sets up openproject

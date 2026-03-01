@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Vox Pupuli
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # @summary installs openproject from package
 #
 # @param package_name

@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Vox Pupuli
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # @summary sets up repository
 #
 # @param apt_sources
