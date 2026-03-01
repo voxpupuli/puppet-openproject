@@ -331,7 +331,14 @@ vagrant box add debian/bookworm64 --provider libvirt
 * Only Debian distribution is supported
 * Only use this when using a dedicated VM
 * no advanced configuration (yet)
-* No tasks (yet)
+
+### Debian 13 (Trixie)
+
+Debian 13 support is **blocked** by an upstream issue: the OpenProject APT
+signing key uses SHA1 self-signatures, which Debian 13 rejects (SHA1
+deprecated February 2026). Adding Debian 13 to `metadata.json` would be
+dishonest until OpenProject reissues their key with SHA256+. See
+`.todo/debian13-sha1-blocker.md` for details and re-enablement steps.
 
 ## Development
 
