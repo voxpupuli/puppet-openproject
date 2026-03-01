@@ -1,0 +1,31 @@
+# .ai-provenance.yml — AI Provenance Bibliography
+# Required by OpenVox MCP Policy Area B3
+#
+# This file documents AI tool involvement in the puppet-openproject module.
+---
+version: "1.0"
+module: puppet-openproject
+created: "2026-03-01"
+contributions:
+  - date: "2026-03-01"
+    branch: mcp-compliance
+    ai_tool: "Claude Opus 4.6 (Anthropic)"
+    ai_role: AI-Co-Author
+    contributor: "Hugo Antonio Sepulveda Manriquez <hugo@neatnerds.be>"
+    description: >
+      MCP compliance remediation: added SPDX headers to all source files,
+      switched license from GPL-3.0-or-later to GPL-3.0-only, updated
+      metadata.json, and documented compliance decisions.
+    files_modified:
+      - metadata.json
+      - manifests/*.pp
+      - tasks/*.rb
+      - templates/*.epp
+      - spec/**/*.rb
+      - openvox_mcp_findings.md
+    sources:
+      - type: project_code
+        reference: "Existing puppet-openproject module source"
+      - type: documentation
+        reference: "OpenVox AI Governance Policy v1.0.0-draft"
+...
