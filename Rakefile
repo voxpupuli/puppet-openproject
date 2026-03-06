@@ -1,4 +1,5 @@
-# frozen_string_literal: true
+# Managed by modulesync - DO NOT EDIT
+# https://voxpupuli.org/docs/updating-files-managed-with-modulesync/
 
 begin
   require 'voxpupuli/test/rake'
@@ -8,21 +9,6 @@ end
 
 begin
   require 'voxpupuli/acceptance/rake'
-
-  # Ensure fixtures are prepared before beaker and cleaned up after a successful
-  # run, but only when configure_beaker is set to use :fixtures for module
-  # installation. Other modes (:metadata, nil) handle modules differently and
-  # do not require fixture management.
-  spec_helper_acceptance = File.join(__dir__, 'spec', 'spec_helper_acceptance.rb')
-  if Rake::Task.task_defined?(:beaker) &&
-     File.exist?(spec_helper_acceptance) &&
-     File.read(spec_helper_acceptance).match?(%r{configure_beaker\(.*modules:\s*:fixtures})
-    task beaker: ['fixtures:prep']
-
-    Rake::Task[:beaker].enhance do
-      Rake::Task['fixtures:clean'].invoke
-    end
-  end
 rescue LoadError
   # only available if gem group acceptance is installed
 end
@@ -34,6 +20,17 @@ rescue LoadError
 else
   GCGConfig.user = 'voxpupuli'
   GCGConfig.project = 'puppet-openproject'
+end
+
+desc "Run main 'test' task and report merged results to coveralls"
+task test_with_coveralls: [:test] do
+  if Dir.exist?(File.expand_path('../lib', __FILE__))
+    require 'coveralls/rake/task'
+    Coveralls::RakeTask.new
+    Rake::Task['coveralls:push'].invoke
+  else
+    puts 'Skipping reporting to coveralls.  Module has no lib dir'
+  end
 end
 
 # vim: syntax=ruby
