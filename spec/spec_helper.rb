@@ -8,11 +8,9 @@
 ENV['COVERAGE'] ||= 'yes' if Dir.exist?(File.expand_path('../lib', __dir__))
 
 require 'voxpupuli/test/spec_helper'
-require 'spec_helper_local' if File.file?(File.join(File.dirname(__FILE__), 'spec_helper_local.rb'))
 
 RSpec.configure do |c|
   c.facterdb_string_keys = false
-  c.hiera_config = 'hiera.yaml'
 end
 
 add_mocked_facts!
