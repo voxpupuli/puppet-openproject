@@ -192,6 +192,12 @@ server/variant apache2
             it {
               is_expected.to contain_package('openproject').with('mark' => 'none')
             }
+
+            it {
+              is_expected.to contain_package('openproject').that_requires(
+                ['Class[openproject::repository]', 'Class[apt::update]']
+              )
+            }
           end
         end
 

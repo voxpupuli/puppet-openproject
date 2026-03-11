@@ -38,19 +38,26 @@ describe 'openproject::install' do
           is_expected.to compile.with_all_deps
         }
 
-        it {
-          is_expected.to contain_package(
-            'openproject'
-          ).with(
-            'ensure' => 'present'
-          ).that_requires(
-            'Class[openproject::repository]'
-          )
-        }
-
         if os_facts[:os]['family'] == 'Debian'
           it {
-            is_expected.to contain_package('openproject').with('mark' => 'none')
+            is_expected.to contain_package(
+              'openproject'
+            ).with(
+              'ensure' => 'present',
+              'mark'   => 'none'
+            ).that_requires(
+              ['Class[openproject::repository]', 'Class[apt::update]']
+            )
+          }
+        else
+          it {
+            is_expected.to contain_package(
+              'openproject'
+            ).with(
+              'ensure' => 'present'
+            ).that_requires(
+              ['Class[openproject::repository]']
+            )
           }
         end
       end
@@ -76,7 +83,7 @@ describe 'openproject::install' do
               'ensure' => '14.5.0-1',
               'mark'   => 'hold'
             ).that_requires(
-              'Class[openproject::repository]'
+              ['Class[openproject::repository]', 'Class[apt::update]']
             )
           }
         end

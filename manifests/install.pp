@@ -23,9 +23,14 @@ class openproject::install (
     default  => {},
   }
 
+  $_require = $facts['os']['family'] ? {
+    'Debian' => [Class['openproject::repository'], Class['apt::update']],
+    default  => [Class['openproject::repository']],
+  }
+
   package { $package_name:
     ensure  => $package_ensure,
-    require => Class['openproject::repository'],
+    require => $_require,
     *       => $_package_attrs,
   }
 }
