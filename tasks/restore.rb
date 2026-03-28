@@ -52,7 +52,7 @@ pg_no_owner = params.fetch('pg_no_owner', false)
 unless Process.uid.zero?
   error(
     'This task must run as root (restore requires root privileges).',
-    'openproject/not-root'
+    'openproject/not-root',
   )
 end
 
@@ -62,7 +62,7 @@ openproject_bin.strip!
 if openproject_bin.empty?
   error(
     'The openproject command was not found in PATH. Is OpenProject installed?',
-    'openproject/command-not-found'
+    'openproject/command-not-found',
   )
 end
 
@@ -72,26 +72,26 @@ pg_restore_bin.strip!
 if pg_restore_bin.empty?
   error(
     'pg_restore was not found in PATH. Is PostgreSQL client installed?',
-    'openproject/pg-restore-not-found'
+    'openproject/pg-restore-not-found',
   )
 end
 
 # Build file map: component -> { path, target_dir, required }
 files = {
   'database'         => { 'path' => File.join(backup_dir, "postgresql-dump-#{timestamp}.pgdump"),
-                          'required' => true },
+                          'required' => true, },
   'attachments'      => { 'path' => File.join(backup_dir, "attachments-#{timestamp}.tar.gz"),
                           'target' => '/var/db/openproject/files',
-                          'required' => true },
+                          'required' => true, },
   'configuration'    => { 'path' => File.join(backup_dir, "conf-#{timestamp}.tar.gz"),
                           'target' => '/etc/openproject',
-                          'required' => true },
+                          'required' => true, },
   'git_repositories' => { 'path' => File.join(backup_dir, "git-repositories-#{timestamp}.tar.gz"),
                           'target' => '/var/db/openproject/git',
-                          'required' => false },
+                          'required' => false, },
   'svn_repositories' => { 'path' => File.join(backup_dir, "svn-repositories-#{timestamp}.tar.gz"),
                           'target' => '/var/db/openproject/svn',
-                          'required' => false },
+                          'required' => false, },
 }
 
 # Check that all required files exist.
@@ -100,7 +100,7 @@ unless missing.empty?
   error(
     "Required backup files not found for timestamp #{timestamp}: #{missing.keys.join(', ')}.",
     'openproject/missing-backup-files',
-    { 'missing' => missing.map { |k, v| { 'component' => k, 'path' => v['path'] } } }
+    { 'missing' => missing.map { |k, v| { 'component' => k, 'path' => v['path'] } } },
   )
 end
 
@@ -113,7 +113,7 @@ unless result['success']
   error(
     "Failed to stop the openproject service (exit #{result['exitcode']}).",
     'openproject/service-stop-failed',
-    { 'steps' => steps }
+    { 'steps' => steps },
   )
 end
 
@@ -132,7 +132,7 @@ end
   error(
     "Failed to restore #{component} (exit #{result['exitcode']}).",
     'openproject/restore-failed',
-    { 'component' => component, 'steps' => steps }
+    { 'component' => component, 'steps' => steps },
   )
 end
 
@@ -144,7 +144,7 @@ unless db_url_status.success?
   error(
     'Failed to retrieve DATABASE_URL from openproject config.',
     'openproject/database-url-failed',
-    { 'stderr' => db_url_stderr, 'steps' => steps }
+    { 'stderr' => db_url_stderr, 'steps' => steps },
   )
 end
 database_url = db_url_stdout.strip
@@ -161,7 +161,7 @@ unless result['success']
   error(
     "pg_restore exited with status #{result['exitcode']}. The database may be in an inconsistent state.",
     'openproject/pg-restore-failed',
-    { 'steps' => steps }
+    { 'steps' => steps },
   )
 end
 
@@ -172,7 +172,7 @@ unless result['success']
   error(
     "Restore completed but failed to restart the openproject service (exit #{result['exitcode']}).",
     'openproject/service-restart-failed',
-    { 'steps' => steps }
+    { 'steps' => steps },
   )
 end
 

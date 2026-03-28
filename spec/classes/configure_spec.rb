@@ -30,19 +30,19 @@ describe 'openproject::configure' do
           # Configuration
           it {
             is_expected.to contain_file(
-              '/etc/openproject'
+              '/etc/openproject',
             ).with(
               'ensure' => 'directory',
               'mode' => '0750',
               'owner' => 'openproject',
-              'group' => 'openproject'
+              'group' => 'openproject',
             )
           }
 
           # configuration - installer.dat reference file
           it {
             is_expected.to contain_file(
-              '/etc/openproject/installer.dat.puppet'
+              '/etc/openproject/installer.dat.puppet',
             ).with(
               'ensure' => 'file',
               # rubocop:disable Layout/TrailingWhitespace
@@ -68,25 +68,25 @@ server/variant apache2
 ",
               # rubocop:enable Layout/TrailingWhitespace
               'owner' => 'openproject',
-              'group' => 'openproject'
+              'group' => 'openproject',
             )
           }
 
           it {
             is_expected.to contain_exec(
-              'configure openproject'
+              'configure openproject',
             ).with(
               'creates' => '/etc/openproject/installer.dat',
-              'provider' => 'shell'
+              'provider' => 'shell',
             )
           }
 
           it {
             is_expected.to contain_exec(
-              'reconfigure openproject'
+              'reconfigure openproject',
             ).with(
               'onlyif' => 'test -f /etc/openproject/installer.dat',
-              'provider' => 'shell'
+              'provider' => 'shell',
             )
           }
         end
@@ -101,7 +101,7 @@ server/variant apache2
               SMTP_AUTHENTICATION: '"plain"',
               SMTP_USER_NAME: '"user"',
               SMTP_PASSWORD: '"password"',
-              SMTP_ENABLE_STARTTLS_AUTO: '"true"'
+              SMTP_ENABLE_STARTTLS_AUTO: '"true"',
             } }
           end
 
@@ -112,19 +112,19 @@ server/variant apache2
           # Configuration of environment variables
           it {
             is_expected.to contain_file(
-              '/etc/openproject/conf.d'
+              '/etc/openproject/conf.d',
             ).with(
               'ensure' => 'directory',
               'mode' => '0750',
               'owner' => 'openproject',
-              'group' => 'openproject'
+              'group' => 'openproject',
             )
           }
 
           # configuration - env
           it {
             is_expected.to contain_file(
-              '/etc/openproject/conf.d/env'
+              '/etc/openproject/conf.d/env',
             ).with(
               'ensure' => 'file',
               'content' => 'EMAIL_DELIVERY_METHOD="smtp"
@@ -138,25 +138,25 @@ SMTP_USER_NAME="user"
 ',
               'notify' => 'Exec[reconfigure openproject]',
               'owner' => 'openproject',
-              'group' => 'openproject'
+              'group' => 'openproject',
             )
           }
 
           it {
             is_expected.to contain_exec(
-              'configure openproject'
+              'configure openproject',
             ).with(
               'creates' => '/etc/openproject/installer.dat',
-              'provider' => 'shell'
+              'provider' => 'shell',
             )
           }
 
           it {
             is_expected.to contain_exec(
-              'reconfigure openproject'
+              'reconfigure openproject',
             ).with(
               'onlyif' => 'test -f /etc/openproject/installer.dat',
-              'provider' => 'shell'
+              'provider' => 'shell',
             )
           }
         end
