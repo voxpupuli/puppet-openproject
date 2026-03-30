@@ -29,12 +29,12 @@ describe 'openproject::install' do
 
         it {
           is_expected.to contain_package(
-            'openproject'
+            'openproject',
           ).with(
             'ensure' => 'present',
-            'mark'   => 'none'
+            'mark'   => 'none',
           ).that_requires(
-            ['Class[openproject::repository]', 'Class[apt::update]']
+            ['Class[openproject::repository]', 'Class[apt::update]'],
           )
         }
       end
@@ -54,12 +54,12 @@ describe 'openproject::install' do
 
         it {
           is_expected.to contain_package(
-            'openproject-custom'
+            'openproject-custom',
           ).with(
             'ensure' => '14.5.0-1',
-            'mark'   => 'hold'
+            'mark'   => 'hold',
           ).that_requires(
-            ['Class[openproject::repository]', 'Class[apt::update]']
+            ['Class[openproject::repository]', 'Class[apt::update]'],
           )
         }
       end

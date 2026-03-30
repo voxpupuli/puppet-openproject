@@ -33,31 +33,31 @@ describe 'openproject' do
 
           it {
             is_expected.to contain_class(
-              'openproject::system_requirements'
+              'openproject::system_requirements',
             ).that_comes_before(
-              'Class[openproject::repository]'
+              'Class[openproject::repository]',
             )
           }
 
           it {
             is_expected.to contain_class(
-              'openproject::repository'
+              'openproject::repository',
             ).that_comes_before(
-              'Class[openproject::install]'
+              'Class[openproject::install]',
             )
           }
 
           it {
             is_expected.to contain_class(
-              'openproject::install'
+              'openproject::install',
             ).that_comes_before(
-              'Class[openproject::configure]'
+              'Class[openproject::configure]',
             )
           }
 
           it {
             is_expected.to contain_class(
-              'openproject::configure'
+              'openproject::configure',
             )
           }
 
@@ -71,9 +71,9 @@ describe 'openproject' do
           system_requirements_packages.each do |package|
             it {
               is_expected.to contain_package(
-                package.to_s
+                package.to_s,
               ).with_ensure(
-                'installed'
+                'installed',
               )
             }
           end
@@ -81,55 +81,55 @@ describe 'openproject' do
           # repository presence
           it {
             is_expected.to contain_apt__source(
-              'openproject'
+              'openproject',
             ).with(
               'ensure' => 'present',
               'comment' => 'OpenProject APT repository - https://www.openproject.org/docs/installation-and-operations/installation/packaged/#debian-installation',
               'include' => {
                 'deb' => true,
-                'src' => false
+                'src' => false,
 
               },
               'key' => {
                 'name' => 'openproject.asc',
                 'source' => 'https://dl.packager.io/srv/opf/openproject/key',
                 'checksum' => 'sha256',
-                'checksum_value' => '35ee80b7fca522dc8f418e81ff20ae189e957f0216f1e47c29cca2cd5f0069e0'
+                'checksum_value' => '35ee80b7fca522dc8f418e81ff20ae189e957f0216f1e47c29cca2cd5f0069e0',
               },
               'location' => "https://dl.packager.io/srv/deb/opf/openproject/stable/#{params['release_major']}/debian",
               'release' => os_facts[:os]['distro']['release']['major'],
-              'repos' => 'main'
+              'repos' => 'main',
             )
           }
 
           # module package presence
           it {
             is_expected.to contain_package(
-              'openproject'
+              'openproject',
             ).with(
               'ensure' => 'present',
-              'mark'   => 'none'
+              'mark'   => 'none',
             ).that_requires(
-              ['Class[openproject::repository]', 'Class[apt::update]']
+              ['Class[openproject::repository]', 'Class[apt::update]'],
             )
           }
 
           # Configuration
           it {
             is_expected.to contain_file(
-              '/etc/openproject'
+              '/etc/openproject',
             ).with(
               'ensure' => 'directory',
               'mode' => '0750',
               'owner' => 'openproject',
-              'group' => 'openproject'
+              'group' => 'openproject',
             )
           }
 
           # configuration - installer.dat reference file
           it {
             is_expected.to contain_file(
-              '/etc/openproject/installer.dat.puppet'
+              '/etc/openproject/installer.dat.puppet',
             ).with(
               'ensure' => 'file',
               # rubocop:disable Layout/TrailingWhitespace
@@ -155,25 +155,25 @@ server/variant apache2
 ",
               # rubocop:enable Layout/TrailingWhitespace
               'owner' => 'openproject',
-              'group' => 'openproject'
+              'group' => 'openproject',
             )
           }
 
           it {
             is_expected.to contain_exec(
-              'configure openproject'
+              'configure openproject',
             ).with(
               'creates' => '/etc/openproject/installer.dat',
-              'provider' => 'shell'
+              'provider' => 'shell',
             )
           }
 
           it {
             is_expected.to contain_exec(
-              'reconfigure openproject'
+              'reconfigure openproject',
             ).with(
               'onlyif' => 'test -f /etc/openproject/installer.dat',
-              'provider' => 'shell'
+              'provider' => 'shell',
             )
           }
         end

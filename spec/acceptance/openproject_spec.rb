@@ -27,9 +27,9 @@ describe 'openproject class:' do
         'File[/etc/apt/keyrings/openproject.asc]',
       ]
       result = apply_manifest(manifest, catch_failures: true, debug: true)
-      changes = result.stdout.lines.
-                grep(%r{Notice: /Stage\[main\]/.*changed}).
-                reject { |line| known_changes.any? { |known| line.include?(known) } }
+      changes = result.stdout.lines
+                      .grep(%r{Notice: /Stage\[main\]/.*changed})
+                      .reject { |line| known_changes.any? { |known| line.include?(known) } }
       expect(changes).to be_empty,
                          "Unexpected resource changes on second run:\n#{changes.join}"
     end

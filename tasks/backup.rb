@@ -56,7 +56,7 @@ backup_dir = params.fetch('backup_dir', '/var/db/openproject/backup')
 unless Process.uid.zero?
   error(
     'This task must run as root (openproject run backup requires root privileges).',
-    'openproject/not-root'
+    'openproject/not-root',
   )
 end
 
@@ -66,7 +66,7 @@ openproject_bin.strip!
 if openproject_bin.empty?
   error(
     'The openproject command was not found in PATH. Is OpenProject installed?',
-    'openproject/command-not-found'
+    'openproject/command-not-found',
   )
 end
 
@@ -88,7 +88,7 @@ unless status.success?
       'exitcode' => status.exitstatus,
       'stdout'   => stdout,
       'stderr'   => stderr,
-    }
+    },
   )
 end
 
