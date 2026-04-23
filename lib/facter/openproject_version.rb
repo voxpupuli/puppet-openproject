@@ -11,7 +11,7 @@ Facter.add(:openproject_version) do
   setcode do
     if Facter::Core::Execution.which('dpkg-query')
       output = Facter::Core::Execution.execute(
-        'dpkg-query -W -f \'${Status} ${Version}\' openproject 2>/dev/null'
+        'dpkg-query -W -f \'${Status} ${Version}\' openproject 2>/dev/null',
       )
       if output.match?(%r{^install ok installed })
         # Strip to upstream version: "14.6.3-1730194473..." -> "14.6.3"
@@ -19,7 +19,7 @@ Facter.add(:openproject_version) do
       end
     elsif Facter::Core::Execution.which('rpm')
       output = Facter::Core::Execution.execute(
-        'rpm -q --qf \'%{VERSION}\' openproject 2>/dev/null'
+        'rpm -q --qf \'%{VERSION}\' openproject 2>/dev/null',
       )
       output unless output.match?(%r{not installed})
     end

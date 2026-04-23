@@ -21,3 +21,16 @@
 #
 Rakefile:
   unmanaged: true
+#
+# Acceptance tests — disabled in GHA CI.
+#
+# The acceptance tests install the full OpenProject stack (repository, package,
+# configure with PostgreSQL + Apache) and require a full OS with systemd. The
+# GHA CI uses podman containers which lack proper locale (causing
+# "invalid byte sequence in US-ASCII" on Debian) and cannot reach the
+# packager.io RPM repository (returning HTTP 500 on CentOS).
+#
+# Acceptance tests are validated locally using libvirt VMs before pushing.
+#
+.github/workflows/ci.yml:
+  acceptance_tests: false

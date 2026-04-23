@@ -100,6 +100,6 @@ rescue StandardError => e
       'url'        => url.to_s,
       'check_type' => check_type,
       'exception'  => e.class.name,
-    }
+    },
   )
 end

@@ -17,16 +17,16 @@ describe 'openproject_version' do
     end
 
     it 'returns the upstream version when openproject is installed' do
-      allow(Facter::Core::Execution).to receive(:execute).
-        with("dpkg-query -W -f '${Status} ${Version}' openproject 2>/dev/null").
-        and_return('install ok installed 14.6.3-1730194473.buster')
+      allow(Facter::Core::Execution).to receive(:execute)
+        .with("dpkg-query -W -f '${Status} ${Version}' openproject 2>/dev/null")
+        .and_return('install ok installed 14.6.3-1730194473.buster')
       expect(Facter.fact(:openproject_version).value).to eq('14.6.3')
     end
 
     it 'returns nil when openproject is not installed' do
-      allow(Facter::Core::Execution).to receive(:execute).
-        with("dpkg-query -W -f '${Status} ${Version}' openproject 2>/dev/null").
-        and_return('')
+      allow(Facter::Core::Execution).to receive(:execute)
+        .with("dpkg-query -W -f '${Status} ${Version}' openproject 2>/dev/null")
+        .and_return('')
       expect(Facter.fact(:openproject_version).value).to be_nil
     end
   end
@@ -38,16 +38,16 @@ describe 'openproject_version' do
     end
 
     it 'returns the version when openproject is installed' do
-      allow(Facter::Core::Execution).to receive(:execute).
-        with("rpm -q --qf '%{VERSION}' openproject 2>/dev/null").
-        and_return('14.6.3')
+      allow(Facter::Core::Execution).to receive(:execute)
+        .with("rpm -q --qf '%{VERSION}' openproject 2>/dev/null")
+        .and_return('14.6.3')
       expect(Facter.fact(:openproject_version).value).to eq('14.6.3')
     end
 
     it 'returns nil when openproject is not installed' do
-      allow(Facter::Core::Execution).to receive(:execute).
-        with("rpm -q --qf '%{VERSION}' openproject 2>/dev/null").
-        and_return('package openproject is not installed')
+      allow(Facter::Core::Execution).to receive(:execute)
+        .with("rpm -q --qf '%{VERSION}' openproject 2>/dev/null")
+        .and_return('package openproject is not installed')
       expect(Facter.fact(:openproject_version).value).to be_nil
     end
   end
