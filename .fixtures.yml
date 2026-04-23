@@ -3,4 +3,8 @@ fixtures:
   repositories:
     apt: 'https://github.com/puppetlabs/puppetlabs-apt.git'
     stdlib: 'https://github.com/puppetlabs/puppetlabs-stdlib.git'
+    yumrepo_core:
+      repo: 'https://github.com/puppetlabs/puppetlabs-yumrepo_core.git'
+      ref: 'v2.1.0'
+      puppet_module: 'yumrepo_core'
 ...

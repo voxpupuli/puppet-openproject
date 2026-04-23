@@ -1,6 +1,9 @@
 #!/opt/puppetlabs/puppet/bin/ruby
 # frozen_string_literal: true
 
+# SPDX-FileCopyrightText: 2026 Vox Pupuli
+# SPDX-License-Identifier: GPL-3.0-only
+
 #
 # openproject::restore - Bolt task
 #

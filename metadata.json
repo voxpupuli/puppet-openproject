@@ -1,9 +1,9 @@
 {
   "name": "puppet-openproject",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "author": "Vox Pupuli",
   "summary": "A puppet module to install and configure OpenProject",
-  "license": "GPL-3.0-or-later",
+  "license": "GPL-3.0-only",
   "source": "https://github.com/voxpupuli/puppet-openproject",
   "project_page": "https://github.com/voxpupuli/puppet-openproject",
   "issues_url": "https://github.com/voxpupuli/puppet-openproject/issues",
@@ -23,6 +23,18 @@
       "operatingsystemrelease": [
         "11",
         "12"
+      ]
+    },
+    {
+      "operatingsystem": "RedHat",
+      "operatingsystemrelease": [
+        "9"
+      ]
+    },
+    {
+      "operatingsystem": "CentOS",
+      "operatingsystemrelease": [
+        "9"
       ]
     }
   ],

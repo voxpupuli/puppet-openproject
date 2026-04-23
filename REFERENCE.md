@@ -20,11 +20,15 @@
 ### Tasks
 
 * [`backup`](#backup): Create a full backup of an OpenProject package-based installation (database, attachments, configuration, and repositories).
+* [`health_check`](#health_check): Check the health of an OpenProject instance via its built-in health check endpoint (/health_checks).
 * [`restore`](#restore): Restore an OpenProject package-based installation from a timestamped backup set (database, attachments, configuration, and repositories).
 
 ## Classes
 
 ### <a name="openproject"></a>`openproject`
+
+SPDX-FileCopyrightText: 2026 Vox Pupuli
+SPDX-License-Identifier: GPL-3.0-only
 
 This is the public class that sets up openproject
 
@@ -55,7 +59,8 @@ Default value: `false`
 
 ### <a name="openproject--configure"></a>`openproject::configure`
 
-Configures openproject
+SPDX-FileCopyrightText: 2026 Vox Pupuli
+SPDX-License-Identifier: GPL-3.0-only
 
 #### Parameters
 
@@ -146,6 +151,50 @@ Create a full backup of an OpenProject package-based installation (database, att
 Data type: `Optional[String[1]]`
 
 Directory where OpenProject stores backup files.
+
+### <a name="health_check"></a>`health_check`
+
+Check the health of an OpenProject instance via its built-in health check endpoint (/health_checks).
+
+**Supports noop?** false
+
+#### Parameters
+
+##### `check_type`
+
+Data type: `Enum['default', 'database', 'mail', 'puma', 'worker', 'worker_backed_up', 'all']`
+
+Health check type. Use 'default' for the standard check, or one of: database, mail, puma, worker, worker_backed_up, all.
+
+##### `base_url`
+
+Data type: `Optional[String[1]]`
+
+Base URL of the OpenProject instance.
+
+##### `follow_redirects`
+
+Data type: `Optional[Boolean]`
+
+Follow HTTP redirects.
+
+##### `insecure`
+
+Data type: `Optional[Boolean]`
+
+Skip TLS certificate verification. NOT RECOMMENDED for production use.
+
+##### `auth_password`
+
+Data type: `Optional[String[1]]`
+
+Basic auth password for the health check endpoint. Required if OpenProject is configured with health_checks_authentication_password.
+
+##### `timeout`
+
+Data type: `Optional[Integer]`
+
+HTTP request timeout in seconds.
 
 ### <a name="restore"></a>`restore`
 

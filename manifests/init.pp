@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Vox Pupuli
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # @summary Openproject Main class
 #
 # This is the public class that sets up openproject
@@ -13,10 +16,10 @@ class openproject (
   Integer $release_major,
   Boolean $enable_full_text_extract,
 ) {
-  unless $facts['os']['name'] == 'Debian' {
+  unless $facts['os']['name'] == 'Debian' or $facts['os']['family'] == 'RedHat' {
     fail('Unsupported Operating system!')
   }
-  unless $facts['os']['architecture'] == 'amd64' {
+  unless $facts['os']['architecture'] in ['amd64', 'x86_64'] {
     fail('Unsupported hardware achitecture!')
   }
 

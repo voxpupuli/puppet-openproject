@@ -4,6 +4,9 @@ TL;DR:
 
 * Installs, configures and runs OpenProject.
 
+[Openproject](https://www.openproject.org/) is a open source project management
+software. People seeking to have full sovereign alternatives to Jira or other
+SaaS project management software, look no further!
 
 ## Table of Contents
 
@@ -28,13 +31,13 @@ Installs and configures openproject
 
 ### What openproject affects
 
-* apt sources
-* packages form software repository
+* APT sources (Debian) or Yum repositories (RHEL/CentOS)
+* packages from software repository
 * database configurations
 
 ### Setup Requirements
 
-* puppetlabs-apt
+* puppetlabs-apt (Debian only)
 * puppetlabs-stdlib
 
 ### Beginning with openproject
@@ -73,18 +76,19 @@ Controls the OpenProject package resource.
 |-----------|------|---------|-------------|
 | `package_name` | `String` | `'openproject'` | Name of the package to install. |
 | `package_ensure` | `String` | `'present'` | Desired package state. Accepts any value valid for the `ensure` attribute of a Puppet `package` resource (`'present'`, `'latest'`, or a version string). |
-| `package_hold` | `Enum['none', 'hold']` | `'none'` | Apt mark state. Set to `'hold'` to prevent the package from being upgraded. |
+| `package_hold` | `Enum['none', 'hold']` | `'none'` | Apt mark state (Debian only). Set to `'hold'` to prevent the package from being upgraded. Ignored on RHEL. |
 
 #### `openproject::repository` (private)
 
-Manages the APT source for the OpenProject package repository. The
-`release_major` parameter is passed down from the public class so it
-always reflects the value you set on `openproject::release_major`.
+Manages the package repository for OpenProject. On Debian, this creates
+an `apt::source`; on RHEL/CentOS, a `yumrepo`. The `release_major`
+parameter is passed down from the public class.
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `apt_sources` | `Hash` | *(OS-specific, see `data/os/Debian.yaml`)* | Hash of parameters passed to `apt::source` (excluding `location`, which is constructed from `release_major`). Contains the repository comment, signing key, release, and repos. |
-| `release_major` | `Integer` | `17` | Inherited from the public class. Used to build the repository URL `https://dl.packager.io/srv/deb/opf/openproject/stable/<release_major>/debian`. |
+| `apt_sources` | `Optional[Hash]` | *(OS-specific, see `data/os/Debian.yaml`)* | Hash of parameters passed to `apt::source` (excluding `location`). Debian only. |
+| `yum_config` | `Optional[Hash]` | *(OS-specific, see `data/os/RedHat.yaml`)* | Hash of parameters passed to `yumrepo` (excluding `baseurl`). RHEL/CentOS only. |
+| `release_major` | `Integer` | `17` | Inherited from the public class. Used to build the repository URL. |
 
 #### `openproject::configure` (private)
 
@@ -133,8 +137,8 @@ can be overridden in Hiera but should rarely need changing.
 |-----|------|---------|-------------|
 | `openproject::system_user` | `String` | `'openproject'` | System user that owns configuration files. |
 | `openproject::system_group` | `String` | `'openproject'` | System group that owns configuration files. |
-| `openproject::system_requirements` | `Array` | `['apt-transport-https', 'ca-certificates', 'wget', 'gpg']` | System packages installed before the repository is configured. |
-| `openproject::full_text_extract_packages` | `Array` | `['catdoc', 'unrtf', 'poppler-utils', 'tesseract-ocr']` | Packages installed when `enable_full_text_extract` is `true`. |
+| `openproject::system_requirements` | `Array` | *(OS-specific)* | System packages installed before the repository is configured. Debian: `['apt-transport-https', 'ca-certificates', 'wget', 'gpg']`. RHEL: `['ca-certificates', 'wget', 'gnupg2']`. |
+| `openproject::full_text_extract_packages` | `Array` | *(OS-specific)* | Packages installed when `enable_full_text_extract` is `true`. Debian: `['catdoc', 'unrtf', 'poppler-utils', 'tesseract-ocr']`. RHEL: `['catdoc', 'unrtf', 'poppler-utils', 'tesseract']`. |
 
 ### Hiera examples
 
@@ -328,10 +332,17 @@ vagrant box add debian/bookworm64 --provider libvirt
 ## Limitations
 
 * x86_64 architecture only
-* Only Debian distribution is supported
+* Supported distributions: Debian 11/12, RHEL 9, CentOS 9
 * Only use this when using a dedicated VM
 * no advanced configuration (yet)
-* No tasks (yet)
+
+### Debian 13 (Trixie)
+
+Debian 13 support is **blocked** by an upstream issue: the OpenProject APT
+signing key uses SHA1 self-signatures, which Debian 13 rejects (SHA1
+deprecated February 2026). Adding Debian 13 to `metadata.json` would be
+dishonest until OpenProject reissues their key with SHA256+. See
+`.todo/debian13-sha1-blocker.md` for details and re-enablement steps.
 
 ## Development
 
@@ -343,3 +354,42 @@ vagrant box add debian/bookworm64 --provider libvirt
 * BASTELFREAK NO!
 * ???
 * Get congratz or get feedback
+
+### AI-assisted development (MCP)
+
+This module supports [OpenVox MCP](https://github.com/OpenVoxProject/openvox-mcp)
+for AI governance policy enforcement during development. MCP (Model Context
+Protocol) lets AI coding assistants like Claude Code interact with project-specific
+tooling.
+
+#### Setting up MCP
+
+1. Copy the example configuration:
+
+```bash
+cp .mcp.json.example .mcp.json
+```
+
+2. Edit `.mcp.json` and choose a transport:
+
+| Transport | Use case | Setup |
+|-----------|----------|-------|
+| **stdio** | Local development with a local clone of openvox-mcp | Set `command` to the absolute path of your `openvox-mcp-stdio` binary |
+| **HTTP Streamable** | Remote or shared openvox-mcp server | Set `url` to the running `openvox-mcp-server` endpoint (default `http://localhost:9393`) |
+
+3. Start Claude Code — it will automatically discover the MCP server.
+
+`.mcp.json` is gitignored because it contains machine-specific paths.
+
+#### Available governance tools
+
+| Tool | Purpose |
+|------|---------|
+| `validate_commit` | Check commit messages for policy compliance (trailers, DCO, disclosure) |
+| `check_disclosure` | Verify AI disclosure trailers are present and correctly formatted |
+| `check_file_access` | Check whether a file can be read or written by AI tools |
+| `get_policy` | Retrieve AI governance policy for a specific area or the full policy |
+| `get_tier` | Determine the tier classification for a repository |
+| `format_trailer` | Generate a properly formatted AI disclosure trailer |
+| `validate_license` | Check whether a license SPDX identifier is allowed |
+| `record_provenance` | Record AI provenance information for a contribution |

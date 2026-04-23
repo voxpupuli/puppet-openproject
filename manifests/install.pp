@@ -1,3 +1,6 @@
+# SPDX-FileCopyrightText: 2026 Vox Pupuli
+# SPDX-License-Identifier: GPL-3.0-only
+#
 # @summary installs openproject from package
 #
 # @param package_name
@@ -7,7 +10,7 @@
 #   The ensure value for the openproject package
 #
 # @param package_hold
-#   The apt mark state for the openproject package
+#   The apt mark state for the openproject package (Debian only)
 #
 # @api private
 class openproject::install (
@@ -15,9 +18,19 @@ class openproject::install (
   String $package_ensure,
   Enum['none', 'hold'] $package_hold,
 ) {
+  $_package_attrs = $facts['os']['family'] ? {
+    'Debian' => { mark => $package_hold },
+    default  => {},
+  }
+
+  $_require = $facts['os']['family'] ? {
+    'Debian' => [Class['openproject::repository'], Class['apt::update']],
+    default  => [Class['openproject::repository']],
+  }
+
   package { $package_name:
     ensure  => $package_ensure,
-    mark    => $package_hold,
-    require => [Class['openproject::repository'], Class['apt::update']],
+    require => $_require,
+    *       => $_package_attrs,
   }
 }

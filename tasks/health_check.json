@@ -1,0 +1,43 @@
+{
+  "description": "Check the health of an OpenProject instance via its built-in health check endpoint (/health_checks).",
+  "parameters": {
+    "check_type": {
+      "description": "Health check type. Use 'default' for the standard check, or one of: database, mail, puma, worker, worker_backed_up, all.",
+      "type": "Enum['default', 'database', 'mail', 'puma', 'worker', 'worker_backed_up', 'all']",
+      "default": "default"
+    },
+    "base_url": {
+      "description": "Base URL of the OpenProject instance.",
+      "type": "Optional[String[1]]",
+      "default": "https://localhost"
+    },
+    "follow_redirects": {
+      "description": "Follow HTTP redirects.",
+      "type": "Optional[Boolean]",
+      "default": true
+    },
+    "insecure": {
+      "description": "Skip TLS certificate verification. NOT RECOMMENDED for production use.",
+      "type": "Optional[Boolean]",
+      "default": false
+    },
+    "auth_password": {
+      "description": "Basic auth password for the health check endpoint. Required if OpenProject is configured with health_checks_authentication_password.",
+      "type": "Optional[String[1]]"
+    },
+    "timeout": {
+      "description": "HTTP request timeout in seconds.",
+      "type": "Optional[Integer]",
+      "default": 10
+    }
+  },
+  "input_method": "stdin",
+  "implementations": [
+    {
+      "name": "health_check.rb",
+      "requirements": [
+        "puppet-agent"
+      ]
+    }
+  ]
+}

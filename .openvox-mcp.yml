@@ -1,0 +1,23 @@
+---
+server:
+  name: 'openvox-mcp'
+  version: '0.3.0'
+transport: 'http'
+log_level: 'standard'  # minimal | standard | comprehensive
+plugins:
+  enabled: true
+  load:
+    - 'puppet'
+security:
+  deny_list: 'default'  # default | custom path
+  network_allowlist:
+    - "https://forge.puppet.com/*"
+    - "https://api.github.com/*"
+    - "https://rubygems.org/*"
+http:
+  authentication:
+    type: api_key           # api_key | mtls | none
+    api_key_env: OPENVOX_MCP_API_KEY
+  security_logging:
+    output: color            # color | json | text
+    level: failures          # failures | all | audit

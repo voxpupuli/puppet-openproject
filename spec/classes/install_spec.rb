@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# SPDX-FileCopyrightText: 2026 Vox Pupuli
+# SPDX-License-Identifier: GPL-3.0-only
+
 require 'spec_helper'
 
 describe 'openproject::install' do
@@ -14,6 +17,14 @@ describe 'openproject::install' do
         'operatingsystem'        => 'Debian',
         'operatingsystemrelease' => %w[11 12],
       },
+      {
+        'operatingsystem'        => 'RedHat',
+        'operatingsystemrelease' => %w[9],
+      },
+      {
+        'operatingsystem'        => 'CentOS',
+        'operatingsystemrelease' => %w[9],
+      },
     ],
   }
   on_supported_os(test_on).each do |os, os_facts|
@@ -27,41 +38,55 @@ describe 'openproject::install' do
           is_expected.to compile.with_all_deps
         }
 
-        it {
-          is_expected.to contain_package(
-            'openproject',
-          ).with(
-            'ensure' => 'present',
-            'mark'   => 'none',
-          ).that_requires(
-            ['Class[openproject::repository]', 'Class[apt::update]'],
-          )
-        }
-      end
-
-      context 'with package_hold set to hold' do
-        let(:params) do
-          {
-            'package_name'   => 'openproject-custom',
-            'package_ensure' => '14.5.0-1',
-            'package_hold'   => 'hold',
+        if os_facts[:os]['family'] == 'Debian'
+          it {
+            is_expected.to contain_package(
+              'openproject',
+            ).with(
+              'ensure' => 'present',
+              'mark'   => 'none',
+            ).that_requires(
+              ['Class[openproject::repository]', 'Class[apt::update]'],
+            )
+          }
+        else
+          it {
+            is_expected.to contain_package(
+              'openproject',
+            ).with(
+              'ensure' => 'present',
+            ).that_requires(
+              ['Class[openproject::repository]'],
+            )
           }
         end
+      end
 
-        it {
-          is_expected.to compile.with_all_deps
-        }
+      if os_facts[:os]['family'] == 'Debian'
+        context 'with package_hold set to hold' do
+          let(:params) do
+            {
+              'package_name'   => 'openproject-custom',
+              'package_ensure' => '14.5.0-1',
+              'package_hold'   => 'hold',
+            }
+          end
 
-        it {
-          is_expected.to contain_package(
-            'openproject-custom',
-          ).with(
-            'ensure' => '14.5.0-1',
-            'mark'   => 'hold',
-          ).that_requires(
-            ['Class[openproject::repository]', 'Class[apt::update]'],
-          )
-        }
+          it {
+            is_expected.to compile.with_all_deps
+          }
+
+          it {
+            is_expected.to contain_package(
+              'openproject-custom',
+            ).with(
+              'ensure' => '14.5.0-1',
+              'mark'   => 'hold',
+            ).that_requires(
+              ['Class[openproject::repository]', 'Class[apt::update]'],
+            )
+          }
+        end
       end
 
       context 'with invalid package_hold value' do
