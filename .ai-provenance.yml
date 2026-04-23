@@ -326,3 +326,26 @@ entries:
         sources:
           - type: 'documentation'
             reference: 'OpenVox MCP configuration format'
+  - commit: 'f2151a6'
+    date: '2026-04-23'
+    contributor: 'Hugo Antonio Sepulveda Manriquez <hugo@neatnerds.be>'
+    ai_tool: 'Claude Opus 4.6 (Anthropic)'
+    ai_role: 'AI-Co-Author'
+    files:
+      - path: '.sync.yml'
+        sources:
+          - type: 'documentation'
+            reference: 'Voxpupuli modulesync_config .sync.yml override mechanism'
+            url: 'https://github.com/voxpupuli/modulesync_config'
+          - type: 'documentation'
+            reference: 'voxpupuli-acceptance README fixtures section'
+            url: 'https://github.com/voxpupuli/voxpupuli-acceptance#fixtures'
+      - path: 'Rakefile'
+        sources:
+          - type: 'project_code'
+            reference: 'Existing Rakefile beaker fixture wiring'
+          - type: 'project_code'
+            reference: 'modulesync 10.8.0 Rakefile.erb template'
+          - type: 'documentation'
+            reference: 'voxpupuli-acceptance README confirming fixture wiring is module developer responsibility'
+            url: 'https://github.com/voxpupuli/voxpupuli-acceptance#fixtures'
