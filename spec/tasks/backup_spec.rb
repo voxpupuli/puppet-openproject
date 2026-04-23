@@ -95,7 +95,7 @@ describe 'openproject::backup' do
           # PATH contains only an empty dir plus system dirs - no openproject
           stdout, _stderr, status = run_task(
             as_root: true,
-            env: { 'PATH' => "#{empty_bin}:/usr/bin:/bin" }
+            env: { 'PATH' => "#{empty_bin}:/usr/bin:/bin" },
           )
 
           expect(status.exitstatus).to eq(1)
@@ -139,7 +139,7 @@ describe 'openproject::backup' do
           stdout, _stderr, status = run_task(
             params: { 'backup_dir' => backup_dir },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
 
           expect(status.exitstatus).to eq(0)
@@ -155,7 +155,7 @@ describe 'openproject::backup' do
           stdout, _stderr, _status = run_task(
             params: { 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
           result = JSON.parse(stdout)
           names = result['files'].map { |f| f['name'] }
@@ -169,7 +169,7 @@ describe 'openproject::backup' do
           stdout, _stderr, _status = run_task(
             params: { 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
           result = JSON.parse(stdout)
 
@@ -185,7 +185,7 @@ describe 'openproject::backup' do
           stdout, _stderr, _status = run_task(
             params: { 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
           result = JSON.parse(stdout)
 
@@ -198,7 +198,7 @@ describe 'openproject::backup' do
           stdout, _stderr, _status = run_task(
             params: { 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
           result = JSON.parse(stdout)
 
@@ -212,7 +212,7 @@ describe 'openproject::backup' do
           # task still succeeds (backup command itself succeeds via mock).
           stdout, _stderr, status = run_task(
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
 
           expect(status.exitstatus).to eq(0)
@@ -243,7 +243,7 @@ describe 'openproject::backup' do
         it 'returns a backup-failed error' do
           stdout, _stderr, status = run_task(
             as_root: true,
-            env: { 'PATH' => "#{bin_dir}:/usr/bin:/bin" }
+            env: { 'PATH' => "#{bin_dir}:/usr/bin:/bin" },
           )
 
           expect(status.exitstatus).to eq(1)
@@ -255,7 +255,7 @@ describe 'openproject::backup' do
         it 'includes the exit code in error details' do
           stdout, _stderr, _status = run_task(
             as_root: true,
-            env: { 'PATH' => "#{bin_dir}:/usr/bin:/bin" }
+            env: { 'PATH' => "#{bin_dir}:/usr/bin:/bin" },
           )
           result = JSON.parse(stdout)
 
@@ -265,7 +265,7 @@ describe 'openproject::backup' do
         it 'includes stderr output in error details' do
           stdout, _stderr, _status = run_task(
             as_root: true,
-            env: { 'PATH' => "#{bin_dir}:/usr/bin:/bin" }
+            env: { 'PATH' => "#{bin_dir}:/usr/bin:/bin" },
           )
           result = JSON.parse(stdout)
 
@@ -301,7 +301,7 @@ describe 'openproject::backup' do
           stdout, _stderr, status = run_task(
             params: { 'backup_dir' => File.join(tmpdir, 'nonexistent') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
 
           expect(status.exitstatus).to eq(0)

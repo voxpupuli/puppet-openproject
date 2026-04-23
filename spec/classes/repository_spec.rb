@@ -32,7 +32,7 @@ describe 'openproject::repository' do
 
         it {
           is_expected.to contain_apt__source(
-            'openproject'
+            'openproject',
           ).with(
             'ensure' => 'present',
             'comment' => 'OpenProject APT repository - https://www.openproject.org/docs/installation-and-operations/installation/packaged/#debian-installation',
@@ -48,7 +48,7 @@ describe 'openproject::repository' do
             },
             'location' => 'https://dl.packager.io/srv/deb/opf/openproject/stable/17/debian',
             'release' => os_facts[:os]['distro']['release']['major'],
-            'repos' => 'main'
+            'repos' => 'main',
           )
         }
       end
@@ -64,9 +64,9 @@ describe 'openproject::repository' do
 
         it {
           is_expected.to contain_apt__source(
-            'openproject'
+            'openproject',
           ).with(
-            'location' => 'https://dl.packager.io/srv/deb/opf/openproject/stable/14/debian'
+            'location' => 'https://dl.packager.io/srv/deb/opf/openproject/stable/14/debian',
           )
         }
       end

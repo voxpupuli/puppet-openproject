@@ -55,13 +55,7 @@ PreCommit:
     enabled: true
   TrailingWhitespace:
     enabled: true
-    exclude:
-      # We disable this check due to a very specific quirk in installer.dat
-      # requiring the key 'server/server_path_prefix ' to have a trailing
-      # whitespace so it has an 'empty value'
-      - 'spec/classes/configure_spec.rb'
-      - 'spec/classes/openproject_spec.rb'
-#
+
 PrePush:
   RakeTarget:
     enabled: true
@@ -71,4 +65,3 @@ PrePush:
       - 'test'
       - 'rubocop'
     command: ['bundle', 'exec', 'rake']
-...
