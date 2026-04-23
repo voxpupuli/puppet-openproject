@@ -1,0 +1,23 @@
+---
+# Per-module overrides for modulesync-managed files.
+# See: https://github.com/voxpupuli/modulesync_config
+#
+# Rakefile — marked unmanaged to preserve beaker fixture wiring.
+#
+# This module uses configure_beaker(modules: :fixtures) in
+# spec_helper_acceptance.rb, which requires spec/fixtures/modules to be
+# populated before the beaker suite starts. The standard modulesync
+# Rakefile.erb template (as of 10.8.0) does not wire fixtures:prep as a
+# prerequisite for the beaker task, because the modulesync default is
+# modules: :metadata (config_defaults.yml line 127).
+#
+# Neither beaker-rspec, puppet_fixtures, nor voxpupuli-acceptance (up to
+# 4.4.0) auto-wire this dependency. The voxpupuli-acceptance README
+# explicitly states fixture wiring is the module developer's responsibility:
+#   https://github.com/voxpupuli/voxpupuli-acceptance#fixtures
+#
+# Until the Rakefile.erb template gains a configurable fixture wiring block
+# (see: upstream contribution pending), this file must remain unmanaged.
+#
+Rakefile:
+  unmanaged: true
