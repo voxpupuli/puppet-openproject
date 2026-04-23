@@ -58,31 +58,31 @@ describe 'openproject' do
 
           it {
             is_expected.to contain_class(
-              'openproject::system_requirements'
+              'openproject::system_requirements',
             ).that_comes_before(
-              'Class[openproject::repository]'
+              'Class[openproject::repository]',
             )
           }
 
           it {
             is_expected.to contain_class(
-              'openproject::repository'
+              'openproject::repository',
             ).that_comes_before(
-              'Class[openproject::install]'
+              'Class[openproject::install]',
             )
           }
 
           it {
             is_expected.to contain_class(
-              'openproject::install'
+              'openproject::install',
             ).that_comes_before(
-              'Class[openproject::configure]'
+              'Class[openproject::configure]',
             )
           }
 
           it {
             is_expected.to contain_class(
-              'openproject::configure'
+              'openproject::configure',
             )
           }
 
@@ -95,28 +95,28 @@ describe 'openproject' do
           # module package presence
           it {
             is_expected.to contain_package(
-              'openproject'
+              'openproject',
             ).with(
-              'ensure' => 'present'
+              'ensure' => 'present',
             )
           }
 
           # Configuration
           it {
             is_expected.to contain_file(
-              '/etc/openproject'
+              '/etc/openproject',
             ).with(
               'ensure' => 'directory',
               'mode' => '0750',
               'owner' => 'openproject',
-              'group' => 'openproject'
+              'group' => 'openproject',
             )
           }
 
           # configuration - installer.dat reference file
           it {
             is_expected.to contain_file(
-              '/etc/openproject/installer.dat.puppet'
+              '/etc/openproject/installer.dat.puppet',
             ).with(
               'ensure' => 'file',
               # rubocop:disable Layout/TrailingWhitespace
@@ -142,25 +142,25 @@ server/variant apache2
 ",
               # rubocop:enable Layout/TrailingWhitespace
               'owner' => 'openproject',
-              'group' => 'openproject'
+              'group' => 'openproject',
             )
           }
 
           it {
             is_expected.to contain_exec(
-              'configure openproject'
+              'configure openproject',
             ).with(
               'creates' => '/etc/openproject/installer.dat',
-              'provider' => 'shell'
+              'provider' => 'shell',
             )
           }
 
           it {
             is_expected.to contain_exec(
-              'reconfigure openproject'
+              'reconfigure openproject',
             ).with(
               'onlyif' => 'test -f /etc/openproject/installer.dat',
-              'provider' => 'shell'
+              'provider' => 'shell',
             )
           }
         end
@@ -169,7 +169,7 @@ server/variant apache2
           context 'Debian-specific: APT source' do
             it {
               is_expected.to contain_apt__source(
-                'openproject'
+                'openproject',
               ).with(
                 'ensure' => 'present',
                 'comment' => 'OpenProject APT repository - https://www.openproject.org/docs/installation-and-operations/installation/packaged/#debian-installation',
@@ -185,7 +185,7 @@ server/variant apache2
                 },
                 'location' => "https://dl.packager.io/srv/deb/opf/openproject/stable/#{params['release_major']}/debian",
                 'release' => os_facts[:os]['distro']['release']['major'],
-                'repos' => 'main'
+                'repos' => 'main',
               )
             }
 
@@ -195,7 +195,7 @@ server/variant apache2
 
             it {
               is_expected.to contain_package('openproject').that_requires(
-                ['Class[openproject::repository]', 'Class[apt::update]']
+                ['Class[openproject::repository]', 'Class[apt::update]'],
               )
             }
           end
@@ -209,7 +209,7 @@ server/variant apache2
                 'enabled' => 1,
                 'gpgcheck' => 0,
                 'repo_gpgcheck' => 1,
-                'gpgkey' => 'https://dl.packager.io/srv/opf/openproject/key'
+                'gpgkey' => 'https://dl.packager.io/srv/opf/openproject/key',
               )
             }
           end

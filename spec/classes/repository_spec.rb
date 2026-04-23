@@ -44,7 +44,7 @@ describe 'openproject::repository' do
         if os_facts[:os]['family'] == 'Debian'
           it {
             is_expected.to contain_apt__source(
-              'openproject'
+              'openproject',
             ).with(
               'ensure' => 'present',
               'comment' => 'OpenProject APT repository - https://www.openproject.org/docs/installation-and-operations/installation/packaged/#debian-installation',
@@ -60,7 +60,7 @@ describe 'openproject::repository' do
               },
               'location' => 'https://dl.packager.io/srv/deb/opf/openproject/stable/17/debian',
               'release' => os_facts[:os]['distro']['release']['major'],
-              'repos' => 'main'
+              'repos' => 'main',
             )
           }
         end
@@ -73,7 +73,7 @@ describe 'openproject::repository' do
               'gpgcheck' => 0,
               'repo_gpgcheck' => 1,
               'gpgkey' => 'https://dl.packager.io/srv/opf/openproject/key',
-              'baseurl' => 'https://dl.packager.io/srv/rpm/opf/openproject/stable/17/el/$releasever/$basearch'
+              'baseurl' => 'https://dl.packager.io/srv/rpm/opf/openproject/stable/17/el/$releasever/$basearch',
             )
           }
         end
@@ -91,9 +91,9 @@ describe 'openproject::repository' do
         if os_facts[:os]['family'] == 'Debian'
           it {
             is_expected.to contain_apt__source(
-              'openproject'
+              'openproject',
             ).with(
-              'location' => 'https://dl.packager.io/srv/deb/opf/openproject/stable/14/debian'
+              'location' => 'https://dl.packager.io/srv/deb/opf/openproject/stable/14/debian',
             )
           }
         end
@@ -101,7 +101,7 @@ describe 'openproject::repository' do
         if os_facts[:os]['family'] == 'RedHat'
           it {
             is_expected.to contain_yumrepo('openproject').with(
-              'baseurl' => 'https://dl.packager.io/srv/rpm/opf/openproject/stable/14/el/$releasever/$basearch'
+              'baseurl' => 'https://dl.packager.io/srv/rpm/opf/openproject/stable/14/el/$releasever/$basearch',
             )
           }
         end

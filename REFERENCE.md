@@ -46,12 +46,16 @@ Data type: `Integer`
 The major release number of openproject, affects major version repo and
 package
 
+Default value: `17`
+
 ##### <a name="-openproject--enable_full_text_extract"></a>`enable_full_text_extract`
 
 Data type: `Boolean`
 
 When set to true, this will provide the required dependencies for full-text
 extraction of attachments.
+
+Default value: `false`
 
 ### <a name="openproject--configure"></a>`openproject::configure`
 
@@ -76,12 +80,16 @@ Data type: `Stdlib::Absolutepath`
 Absolute path String of the configuration directory
 Default: '/etc/openproject'
 
+Default value: `'/etc/openproject'`
+
 ##### <a name="-openproject--configure--file_mode"></a>`file_mode`
 
 Data type: `String`
 
 ACL file mode Integer of the openproject configuration files
 Default: 0640
+
+Default value: `'0640'`
 
 ##### <a name="-openproject--configure--installer_dat_contents"></a>`installer_dat_contents`
 
@@ -94,6 +102,8 @@ It should be noted that when using eyaml, the entire hash needs to be
 inside your hieradata file where you configure secrets
 Default: See 'data/common.yml' for defaults
 
+Default value: `{ 'memcached/autoinstall' => 'install', 'openproject/admin_email' => 'administrator@%{facts.fqdn}', 'openproject/default_language' => 'en', 'openproject/edition' => 'default', 'postgres/addon_version' => 'v1', 'postgres/autoinstall' => 'install', 'postgres/db_name' => 'openproject', 'postgres/db_password' => 'SuperSecretStringSuchSecure', 'postgres/db_username' => 'openproject', 'postgres/dbhost' => 'localhost', 'postgres/dbport' => 5432, 'postgres/retry' => 'retry', 'repositories/git-install' => 'skip', 'repositories/svn-install' => 'skip', 'server/autoinstall' => 'install', 'server/hostname' => '%{facts.fqdn}', 'server/server_path_prefix' => undef, 'server/ssl' => 'no', 'server/variant' => 'apache2' }`
+
 ##### <a name="-openproject--configure--timeout"></a>`timeout`
 
 Data type: `Integer`
@@ -103,12 +113,16 @@ Openproject service. Depending on your installation you might want to
 increase this.
 Default: 600
 
+Default value: `900`
+
 ##### <a name="-openproject--configure--logoutput"></a>`logoutput`
 
 Data type: `String`
 
 String value allowing for logging output of the openproject setup
 Default 'on_failure'
+
+Default value: `'true'`
 
 ##### <a name="-openproject--configure--environment_contents"></a>`environment_contents`
 
@@ -119,6 +133,8 @@ of 'installer.dat' configuration file. This is advanced configuration, be
 sure to read on the openproject docmentation site for your version for more
 information: https://www.openproject.org/docs/installation-and-operations/configuration/environment/
 Default: undef
+
+Default value: `undef`
 
 ## Tasks
 

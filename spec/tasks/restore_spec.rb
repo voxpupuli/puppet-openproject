@@ -119,7 +119,7 @@ describe 'openproject::restore' do
           stdout, _stderr, status = run_task(
             params: { 'timestamp' => '20240101120000' },
             as_root: true,
-            env: { 'PATH' => "#{empty_bin}:/usr/bin:/bin" }
+            env: { 'PATH' => "#{empty_bin}:/usr/bin:/bin" },
           )
 
           expect(status.exitstatus).to eq(1)
@@ -160,7 +160,7 @@ describe 'openproject::restore' do
           stdout, _stderr, status = run_task(
             params: { 'timestamp' => '20240101120000' },
             as_root: true,
-            env: { 'PATH' => File.join(tmpdir, 'bin') }
+            env: { 'PATH' => File.join(tmpdir, 'bin') },
           )
 
           expect(status.exitstatus).to eq(1)
@@ -192,7 +192,7 @@ describe 'openproject::restore' do
           stdout, _stderr, status = run_task(
             params: { 'timestamp' => '99999999999999', 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
 
           expect(status.exitstatus).to eq(1)
@@ -207,7 +207,7 @@ describe 'openproject::restore' do
           stdout, _stderr, _status = run_task(
             params: { 'timestamp' => '99999999999999', 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
           result = JSON.parse(stdout)
           components = result['_error']['details']['missing'].map { |m| m['component'] }
@@ -266,7 +266,7 @@ describe 'openproject::restore' do
           stdout, _stderr, status = run_task(
             params: { 'timestamp' => timestamp, 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
 
           expect(status.exitstatus).to eq(0)
@@ -280,7 +280,7 @@ describe 'openproject::restore' do
           stdout, _stderr, _status = run_task(
             params: { 'timestamp' => timestamp, 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
           result = JSON.parse(stdout)
 
@@ -291,7 +291,7 @@ describe 'openproject::restore' do
           stdout, _stderr, _status = run_task(
             params: { 'timestamp' => timestamp, 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
           result = JSON.parse(stdout)
           step_names = result['steps'].map { |s| s['step'] }
@@ -309,7 +309,7 @@ describe 'openproject::restore' do
           stdout, _stderr, _status = run_task(
             params: { 'timestamp' => timestamp, 'backup_dir' => backup_dir },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
           result = JSON.parse(stdout)
 
@@ -353,7 +353,7 @@ describe 'openproject::restore' do
           stdout, _stderr, status = run_task(
             params: { 'timestamp' => timestamp, 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
 
           expect(status.exitstatus).to eq(1)
@@ -405,7 +405,7 @@ describe 'openproject::restore' do
           stdout, _stderr, status = run_task(
             params: { 'timestamp' => timestamp, 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
 
           expect(status.exitstatus).to eq(1)
@@ -418,7 +418,7 @@ describe 'openproject::restore' do
           stdout, _stderr, _status = run_task(
             params: { 'timestamp' => timestamp, 'backup_dir' => File.join(tmpdir, 'backup') },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
           result = JSON.parse(stdout)
           step_names = result['_error']['details']['steps'].map { |s| s['step'] }
@@ -474,7 +474,7 @@ describe 'openproject::restore' do
           stdout, _stderr, status = run_task(
             params: { 'timestamp' => timestamp, 'backup_dir' => File.join(tmpdir, 'backup'), 'pg_no_owner' => true },
             env: { 'PATH' => "#{File.join(tmpdir, 'bin')}:/usr/bin:/bin" },
-            as_root: true
+            as_root: true,
           )
 
           expect(status.exitstatus).to eq(0)

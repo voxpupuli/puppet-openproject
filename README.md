@@ -4,6 +4,9 @@ TL;DR:
 
 * Installs, configures and runs OpenProject.
 
+[Openproject](https://www.openproject.org/) is a open source project management
+software. People seeking to have full sovereign alternatives to Jira or other
+SaaS project management software, look no further!
 
 ## Table of Contents
 
