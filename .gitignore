@@ -23,7 +23,3 @@
 /Guardfile
 bolt-debug.log
 .rerun.json
-/doc/*
-!/doc/known_bugs/
-/.claude/
-/.mcp.json
