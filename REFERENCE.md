@@ -221,4 +221,3 @@ Directory where OpenProject backup files are stored.
 Data type: `Optional[Boolean]`
 
 Pass --no-owner to pg_restore. Required when restoring to a database with a different owner than the original.
-
